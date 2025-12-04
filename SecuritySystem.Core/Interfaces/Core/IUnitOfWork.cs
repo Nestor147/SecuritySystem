@@ -1,24 +1,53 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
+using SecuritySystem.Core.Entities;
 
 namespace SecuritySystem.Core.Interfaces.Core
 {
     public interface IUnitOfWork : IDisposable
     {
-        // IUnitOfWork.cs
-        //public IGenericRepository<Aplicacion> AplicacionRepository { get; }
-        //public IGenericRepository<AuditoriaLogin> AuditoriaLoginRepository { get; }
-        //public IGenericRepository<DispositivoConocido> DispositivoConocidoRepository { get; }
-        //public IGenericRepository<IntentoFallidoLogin> IntentoFallidoLoginRepository { get; }
-        //public IGenericRepository<RefreshToken> RefreshTokenRepository { get; }
-        //public IGenericRepository<Rol> RolRepository { get; }
-        //public IGenericRepository<RolUsuario> RolUsuarioRepository { get; }
-        //public IGenericRepository<TokenRevocado> TokenRevocadoRepository { get; }
-        //public IGenericRepository<UsuarioSistema> UsuarioSistemaRepository { get; }
-        //public IGenericRepository<Objeto> ObjetoRepository { get; }
-        //public IGenericRepository<ObjetoMenu> ObjetoMenuRepository { get; }
-        //public IGenericRepository<ObjetoPunto> ObjetoPuntoRepository { get; }
-        //public IGenericRepository<RolObjetoMenu> RoleObjetoMenuRepository { get; }
-        //public IGenericRepository<RolePunto> RolePuntoRepository { get; }
+        public IGenericRepository<Application> ApplicationRepository { get; }
+
+        // Users
+        public IGenericRepository<User> UserRepository { get; }
+
+        // Roles
+        public IGenericRepository<Role> RoleRepository { get; }
+
+        // Resources (páginas / nodos / componentes)
+        public IGenericRepository<Resource> ResourceRepository { get; }
+
+        // Menú de recursos
+        public IGenericRepository<ResourceMenu> ResourceMenuRepository { get; }
+
+        // Endpoints de recursos (acciones / APIs)
+        public IGenericRepository<ResourceEndpoint> ResourceEndpointRepository { get; }
+
+        // Asignación de roles a usuarios
+        public IGenericRepository<RoleUser> RoleUserRepository { get; }
+
+        // Permisos de menú por rol
+        public IGenericRepository<RoleResourceMenu> RoleResourceMenuRepository { get; }
+
+        // Permisos de endpoints por rol
+        public IGenericRepository<RoleEndpoint> RoleEndpointRepository { get; }
+
+        // Refresh tokens
+        public IGenericRepository<RefreshToken> RefreshTokenRepository { get; }
+
+        // Intentos de login
+        public IGenericRepository<LoginAttempt> LoginAttemptRepository { get; }
+
+        // JWT revocados (blacklist por JTI)
+        public IGenericRepository<RevokedToken> RevokedTokenRepository { get; }
+
+        // Dispositivos conocidos
+        public IGenericRepository<KnownDevice> KnownDeviceRepository { get; }
+
+        // Auditoría de login
+        public IGenericRepository<LoginAudit> LoginAuditRepository { get; }
+
+        // Claves criptográficas (RSA/AES)
+        public IGenericRepository<CryptoKey> CryptoKeyRepository { get; }
 
         IGenericRepository<T> Repository<T>() where T : class;
 

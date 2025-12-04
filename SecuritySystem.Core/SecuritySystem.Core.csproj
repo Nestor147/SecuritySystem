@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Custom\" />
     <Folder Include="Enums\" />
-    <Folder Include="GetQueryFilter\" />
   </ItemGroup>
 
   <ItemGroup>

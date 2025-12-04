@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SecuritySystem.Core.Entities;
+using SecuritySystem.Infrastructure.Mapping;
 
 namespace SecuritySystem.Infrastructure.Context
 {
@@ -20,6 +21,21 @@ namespace SecuritySystem.Infrastructure.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new ResourceConfiguration());
+            modelBuilder.ApplyConfiguration(new ResourceMenuConfiguration());
+            modelBuilder.ApplyConfiguration(new ResourceEndpointConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleUserConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleResourceMenuConfiguration());
+            modelBuilder.ApplyConfiguration(new RoleEndpointConfiguration());
+            modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+            modelBuilder.ApplyConfiguration(new LoginAttemptConfiguration());
+            modelBuilder.ApplyConfiguration(new RevokedTokenConfiguration());
+            modelBuilder.ApplyConfiguration(new KnownDeviceConfiguration());
+            modelBuilder.ApplyConfiguration(new LoginAuditConfiguration());
+            modelBuilder.ApplyConfiguration(new CryptoKeyConfiguration());
             //modelBuilder.ApplyConfiguration(new AplicacionConfiguration());
             //modelBuilder.ApplyConfiguration(new AuditoriaLoginConfiguration());
             //modelBuilder.ApplyConfiguration(new DispositivoConocidoConfiguration());

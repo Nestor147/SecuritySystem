@@ -1,12 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SecuritySystem.Core.Entities;
 
 namespace SecuritySystem.Infrastructure.Mapping
 {
-    internal class ApplicationConfiguration
+    public class ApplicationConfiguration : IEntityTypeConfiguration<Application>
     {
+        public void Configure(EntityTypeBuilder<Application> builder)
+        {
+            builder.ToTable("Applications", "SECURITY_SYSTEM");
+
+            builder.HasKey(e => e.Id);
+
+            builder.Property(e => e.Id)
+                   .ValueGeneratedOnAdd()
+                   .HasColumnName("Id");
+
+            builder.Property(e => e.Code)
+                   .IsRequired()
+                   .HasMaxLength(25)
+                   .HasColumnName("Code");
+
+            builder.Property(e => e.Name)
+                   .IsRequired()
+                   .HasMaxLength(250)
+                   .HasColumnName("Name");
+
+            builder.Property(e => e.Url)
+                   .HasMaxLength(250)
+                   .HasColumnName("Url");
+
+            builder.Property(e => e.Icon)
+                   .HasMaxLength(50)
+                   .HasColumnName("Icon");
+
+            builder.Property(e => e.RecordStatus)
+                   .IsRequired()
+                   .HasDefaultValue(1)
+                   .HasColumnName("RecordStatus");
+
+            builder.Property(e => e.CreatedAt)
+                   .HasColumnType("datetime2")
+                   .HasDefaultValueSql("SYSUTCDATETIME()")
+                   .HasColumnName("CreatedAt");
+
+            builder.Property(e => e.CreatedBy)
+                   .IsRequired()
+                   .HasMaxLength(100)
+                   .HasDefaultValueSql("SYSTEM_USER")
+                   .HasColumnName("CreatedBy");
+        }
     }
+
 }
