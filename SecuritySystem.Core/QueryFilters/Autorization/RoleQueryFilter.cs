@@ -1,12 +1,12 @@
 ﻿using SecuritySystem.Core.QueryFilters.Custom;
 
-namespace SecuritySystem.Core.QueryFilters
+namespace SecuritySystem.Core.QueryFilters.Autorization
 {
-    public class GetRoleQueryFilter : PaginationQueryFilter
+    public class RoleQueryFilter : AuditFieldsQueryFilter
     {
+        public string Id { get; set; }
         public string ApplicationId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string ResultType { get; set; }
     }
 }

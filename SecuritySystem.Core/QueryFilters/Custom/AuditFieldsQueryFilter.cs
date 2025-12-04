@@ -8,8 +8,8 @@ namespace SecuritySystem.Core.QueryFilters.Custom
 {
     public class AuditFieldsQueryFilter
     {
-        public int EstadoRegistro { get; set; } = 1;
-        public string UsuarioRegistro { get; set; } = "AUTORIZACION";
-        public DateTime FechaRegistro { get; set; } = DateTime.Now;
+        public string CreatedBy { get; set; } = "SECURITY_SYSTEM";
+        public int RecordStatus { get; set; } = 1;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

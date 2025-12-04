@@ -1,7 +1,7 @@
 ﻿using SecuritySystem.Core.QueryFilters.Custom;
 using System.Collections.Generic;
 
-namespace SecuritySystem.Core.QueryFilters
+namespace SecuritySystem.Core.QueryFilters.Autorization
 {
     public class UserRoleQueryFilter : AuditFieldsQueryFilter
     {

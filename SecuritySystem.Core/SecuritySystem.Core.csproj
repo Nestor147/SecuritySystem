@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Custom\" />
-    <Folder Include="Enums\" />
   </ItemGroup>
 
   <ItemGroup>

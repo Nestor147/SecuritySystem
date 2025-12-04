@@ -1,4 +1,4 @@
-﻿namespace SecuritySystem.Core.QueryFilters
+﻿namespace SecuritySystem.Core.GetQueryFilter.Autorization
 {
     public class GetMenuQueryFilter
     {

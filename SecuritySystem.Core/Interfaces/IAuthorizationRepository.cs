@@ -1,4 +1,5 @@
-﻿using SecuritySystem.Core.QueryFilters;
+﻿using SecuritySystem.Core.GetQueryFilter.Autorization;
+using SecuritySystem.Core.QueryFilters.Autorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SecuritySystem.Core.Interfaces
 {
-    public interface IAutorizacionRepository
+    public interface IAuthorizationRepository
     {
         // IMPLEMENTED (with logic in AutorizacionRepository)
 

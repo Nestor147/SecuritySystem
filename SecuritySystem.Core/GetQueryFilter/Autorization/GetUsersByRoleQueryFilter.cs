@@ -1,6 +1,6 @@
 ﻿using SecuritySystem.Core.QueryFilters.Custom;
 
-namespace SecuritySystem.Core.QueryFilters
+namespace SecuritySystem.Core.GetQueryFilter.Autorization
 {
     public class GetUsersByRoleQueryFilter : PaginationQueryFilter
     {

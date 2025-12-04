@@ -12,8 +12,10 @@
 
   <ItemGroup>
     <Folder Include="Mapping\" />
-    <Folder Include="Validators\" />
-    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
   </ItemGroup>
 
 </Project>
