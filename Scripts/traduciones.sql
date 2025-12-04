@@ -1,0 +1,17 @@
+GetApplications
+GetDuplicatedApplications
+GetApplicationsByUserId
+GetUsersByRoleId
+GetFullMenu
+GetMenuByApplication
+GetMenuByRoleId
+ObtenerMenuPorRolUsuario --ojo
+GetResources
+GetDuplicatedResources
+GetRoles
+GetDuplicatedRoles
+GetRoleResourceMenus
+GetRoleResourceMenusByRoleId
+GetRolesByResourceIds
+GetRolesByMultipleUsers
+ObtenerRolesPuntos----OJO

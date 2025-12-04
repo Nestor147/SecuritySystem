@@ -1,0 +1,157 @@
+﻿using Microsoft.EntityFrameworkCore;
+using SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi;
+using SecuritySystem.Core.Interfaces.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
+{
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    {
+        private readonly AppDbContext _context;
+        private readonly DbSet<T> _dbSet;
+
+        public GenericRepository(AppDbContext context)
+        {
+            _context = context;
+            _dbSet = context.Set<T>();
+        }
+
+        public T GetById(int id) => _dbSet.Find(id);
+        public async Task<T> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+
+        public T GetByCustom(Func<IQueryable<T>, T> query)
+         => query(_dbSet.AsNoTracking().AsQueryable());
+
+        public async Task<IEnumerable<T>> GetByCustomQuery(Func<IQueryable<T>, IEnumerable<T>> query)
+            => query(_dbSet.AsNoTracking().AsQueryable());
+
+
+        public IEnumerable<T> GetAll() => _dbSet.AsNoTracking().ToList();
+        public async Task<List<T>> GetAllAsync() => await _dbSet.AsNoTracking().ToListAsync();
+        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
+            => await _dbSet.AsNoTracking().Where(predicate).ToListAsync();
+
+        public ResponsePostDetail Insert(T entity, string proceso = "INSERT")
+        {
+            _dbSet.Add(entity);
+            int affected = _context.SaveChanges();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        public ResponsePostDetail Insert(List<T> entities, string proceso = "INSERT")
+        {
+            _dbSet.AddRange(entities);
+            int affected = _context.SaveChanges();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        public async Task<ResponsePostDetail> InsertAsync(T entity, string proceso = "INSERT")
+        {
+            await _dbSet.AddAsync(entity);
+            int affected = await _context.SaveChangesAsync();
+            string idGenerado = null;
+            var idProp = entity.GetType().GetProperties()
+                .FirstOrDefault(p => p.Name.StartsWith("Id") &&
+                                     (p.PropertyType == typeof(int) || p.PropertyType == typeof(string)));
+            if (idProp != null)
+            {
+                var idValue = idProp.GetValue(entity);
+                idGenerado = idValue?.ToString();
+            }
+            return new ResponsePostDetail
+            {
+                Proceso = proceso,
+                FilasAfectadas = affected,
+                IdGenerado = idGenerado
+            };
+        }
+
+
+        public async Task<ResponsePostDetail> InsertAsync(List<T> entities, string proceso = "INSERT")
+        {
+            await _dbSet.AddRangeAsync(entities);
+            int affected = await _context.SaveChangesAsync();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        public ResponsePostDetail Update(T entity, string proceso = "UPDATE")
+        {
+            _dbSet.Update(entity);
+            int affected = _context.SaveChanges();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        public ResponsePostDetail Update(List<T> entities, string proceso = "UPDATE")
+        {
+            _dbSet.UpdateRange(entities);
+            int affected = _context.SaveChanges();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        public ResponsePostDetail UpdateCustom(T entity, params Expression<Func<T, object>>[] includeProperties)
+        {
+            var set = _context.Set<T>();
+
+            var entityType = _context.Model.FindEntityType(typeof(T))!;
+            var key = entityType.FindPrimaryKey()!;
+
+            var local = set.Local.FirstOrDefault(localEntity =>
+            {
+                var localEntry = _context.Entry(localEntity);
+                var incomingEntry = _context.Entry(entity);
+                return key.Properties.All(p =>
+                    Equals(localEntry.Property(p.Name).CurrentValue,
+                           incomingEntry.Property(p.Name).CurrentValue));
+            });
+
+            if (local != null)
+                _context.Entry(local).State = EntityState.Detached;
+
+            var entry = set.Attach(entity);
+            entry.State = EntityState.Unchanged;
+            foreach (var prop in includeProperties)
+                entry.Property(prop).IsModified = true;
+
+            var affected = _context.SaveChanges();
+            return new ResponsePostDetail { Proceso = "UPDATE CUSTOM", FilasAfectadas = affected };
+        }
+
+
+        public async Task<ResponsePostDetail> DeleteAsync(int id, string proceso = "DELETE")
+        {
+            var entity = await GetByIdAsync(id);
+            _dbSet.Remove(entity);
+            int affected = await _context.SaveChangesAsync();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        public ResponsePostDetail Delete(T entity, string proceso = "DELETE")
+        {
+            _dbSet.Remove(entity);
+            int affected = _context.SaveChanges();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        public ResponsePostDetail Delete(List<T> entities, string proceso = "DELETE")
+        {
+            _dbSet.RemoveRange(entities);
+            int affected = _context.SaveChanges();
+            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+        }
+
+        //Solo para autenticación
+        public IQueryable<T> Query(bool asNoTracking = true)
+        => asNoTracking ? _dbSet.AsNoTracking() : _dbSet.AsQueryable();
+
+        public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
+            => await _dbSet.AsNoTracking().FirstOrDefaultAsync(predicate, ct);
+
+        public async Task<List<T>> WhereAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
+            => await _dbSet.AsNoTracking().Where(predicate).ToListAsync(ct);
+    }
+}
