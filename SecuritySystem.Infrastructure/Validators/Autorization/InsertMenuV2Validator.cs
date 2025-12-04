@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
 using SecuritySystem.Core.QueryFilters.Autorization;
+using SecuritySystem.Infrastructure.Validators.Autorization;
 
-namespace SecuritySystem.Infrastructure.Validators.Autorization
+namespace SecuritySystem.Infrastructure.Validators.Security
 {
     public class InsertMenuV2Validator : AbstractValidator<MenuV2QueryFilter>
     {
@@ -16,7 +17,8 @@ namespace SecuritySystem.Infrastructure.Validators.Autorization
                         .SetValidator(new InsertMenuV2NodeValidator());
                 });
 
-            RuleFor(menu => menu.RegisteredByUser)
+            // Usa el nombre real de la propiedad de auditoría
+            RuleFor(menu => menu.CreatedBy)
                 .NotEmpty()
                 .WithMessage("The registered user is required.");
 
@@ -25,4 +27,5 @@ namespace SecuritySystem.Infrastructure.Validators.Autorization
                 .WithMessage("The application id is required.");
         }
     }
+
 }

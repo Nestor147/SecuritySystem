@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using SecuritySystem.Core.QueryFilters.Autorization;
 
-namespace SecuritySystem.Infrastructure.Validators.Autorization
+namespace SecuritySystem.Infrastructure.Validators.Security
 {
-    public class InsertMenuV2NodeValidator : AbstractValidator<ContentMenuV2QueryFilter>
+    public class InsertMenuV2NodeValidator : AbstractValidator<MenuV2ItemQueryFilter>
     {
         public InsertMenuV2NodeValidator()
         {
