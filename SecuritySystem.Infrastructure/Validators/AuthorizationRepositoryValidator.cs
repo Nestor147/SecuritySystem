@@ -4,6 +4,7 @@ using SecuritySystem.Core.Interfaces.Validators;
 using SecuritySystem.Core.QueryFilters.Autorization;
 using SecuritySystem.Infrastructure.Validators.Autorization;
 using SecuritySystem.Infrastructure.Validators.Core;
+using SecuritySystem.Infrastructure.Validators.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,7 +127,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new InsertarMenuV2Validator();
+                var validator = new InsertMenuV2Validator();
                 var validationResult = validator.Validate(menuQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -144,7 +145,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new InsertarRolV2Validator();
+                var validator = new InsertRoleV2Validator();
                 var validationResult = validator.Validate(roleQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -158,7 +159,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new ActualizarRolV2Validator();
+                var validator = new UpdateRoleV2Validator();
                 var validationResult = validator.Validate(roleQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -172,7 +173,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new ObtenerRolV2Validator();
+                var validator = new GetRoleV2Validator();
                 var validationResult = validator.Validate(getRoleQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -186,7 +187,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new ObtenerRolPorUsuarioV2Validator();
+                var validator = new GetRoleByUserV2Validator();
                 var validationResult = validator.Validate(getUsersByRoleQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -200,7 +201,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new ObtenerUsuarioPorRolV2Validator();
+                var validator = new GetUsersByRoleV2Validator();
                 var validationResult = validator.Validate(getUsersByRoleQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -214,7 +215,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new InsertarMultiRolMultiUsuarioValidator();
+                var validator = new InsertMultiRoleMultiUserValidator();
                 var validationResult = validator.Validate(queryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -228,7 +229,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new ObtenerMenuRolUsuarioV2Validator();
+                var validator = new GetUserRoleMenuV2Validator();
                 var validationResult = validator.Validate(getMenuQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -242,7 +243,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new InsertarRolMenuV2Validator();
+                var validator = new InsertRoleMenuV2Validator();
                 var validationResult = validator.Validate(menuQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -256,7 +257,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new ObtenerRolMenuV2Validator();
+                var validator = new GetRoleMenuV2Validator();
                 var validationResult = validator.Validate(menuQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -270,7 +271,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new ObtenerMenuPorRolV2Validator();
+                var validator = new GetMenuByRoleV2Validator();
                 var validationResult = validator.Validate(getMenuQueryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
@@ -284,7 +285,7 @@ namespace SecuritySystem.Infrastructure.Validators
         {
             try
             {
-                var validator = new InsertarRolObjetoValidator();
+                var validator = new InsertRoleResourceValidator();
                 var validationResult = validator.Validate(queryFilter);
                 return MainValidator.IterationValidationResult(validationResult);
             }
