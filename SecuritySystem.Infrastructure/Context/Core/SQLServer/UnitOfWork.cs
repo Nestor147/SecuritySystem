@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
+using SecuritySystem.Core.Entities;
 using SecuritySystem.Core.Interfaces.Core;
 using System.Collections.Concurrent;
 
@@ -9,6 +10,23 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
         #region Atributos
         private readonly AppDbContext _context;
         private IDbContextTransaction _transaction;
+        // Repositories fields
+        private readonly IGenericRepository<Application> _applicationRepository;
+        private readonly IGenericRepository<CryptoKey> _cryptoKeyRepository;
+        private readonly IGenericRepository<KnownDevice> _knownDeviceRepository;
+        private readonly IGenericRepository<LoginAttempt> _loginAttemptRepository;
+        private readonly IGenericRepository<LoginAudit> _loginAuditRepository;
+        private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
+        private readonly IGenericRepository<Resource> _resourceRepository;
+        private readonly IGenericRepository<ResourceEndpoint> _resourceEndpointRepository;
+        private readonly IGenericRepository<ResourceMenu> _resourceMenuRepository;
+        private readonly IGenericRepository<RevokedToken> _revokedTokenRepository;
+        private readonly IGenericRepository<Role> _roleRepository;
+        private readonly IGenericRepository<RoleEndpoint> _roleEndpointRepository;
+        private readonly IGenericRepository<RoleResourceMenu> _roleResourceMenuRepository;
+        private readonly IGenericRepository<RoleUser> _roleUserRepository;
+        private readonly IGenericRepository<User> _userRepository;
+
         //private readonly IGenericRepository<Aplicacion> _aplicacionRepository;
         //private readonly IGenericRepository<AuditoriaLogin> _auditoriaLoginRepository;
         //private readonly IGenericRepository<DispositivoConocido> _dispositivoConocidoRepository;
@@ -40,6 +58,53 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
 
 
         #region Metodos
+
+        // Repositories properties
+        public IGenericRepository<Application> ApplicationRepository =>
+            _applicationRepository ?? new GenericRepository<Application>(_context);
+
+        public IGenericRepository<CryptoKey> CryptoKeyRepository =>
+            _cryptoKeyRepository ?? new GenericRepository<CryptoKey>(_context);
+
+        public IGenericRepository<KnownDevice> KnownDeviceRepository =>
+            _knownDeviceRepository ?? new GenericRepository<KnownDevice>(_context);
+
+        public IGenericRepository<LoginAttempt> LoginAttemptRepository =>
+            _loginAttemptRepository ?? new GenericRepository<LoginAttempt>(_context);
+
+        public IGenericRepository<LoginAudit> LoginAuditRepository =>
+            _loginAuditRepository ?? new GenericRepository<LoginAudit>(_context);
+
+        public IGenericRepository<RefreshToken> RefreshTokenRepository =>
+            _refreshTokenRepository ?? new GenericRepository<RefreshToken>(_context);
+
+        public IGenericRepository<Resource> ResourceRepository =>
+            _resourceRepository ?? new GenericRepository<Resource>(_context);
+
+        public IGenericRepository<ResourceEndpoint> ResourceEndpointRepository =>
+            _resourceEndpointRepository ?? new GenericRepository<ResourceEndpoint>(_context);
+
+        public IGenericRepository<ResourceMenu> ResourceMenuRepository =>
+            _resourceMenuRepository ?? new GenericRepository<ResourceMenu>(_context);
+
+        public IGenericRepository<RevokedToken> RevokedTokenRepository =>
+            _revokedTokenRepository ?? new GenericRepository<RevokedToken>(_context);
+
+        public IGenericRepository<Role> RoleRepository =>
+            _roleRepository ?? new GenericRepository<Role>(_context);
+
+        public IGenericRepository<RoleEndpoint> RoleEndpointRepository =>
+            _roleEndpointRepository ?? new GenericRepository<RoleEndpoint>(_context);
+
+        public IGenericRepository<RoleResourceMenu> RoleResourceMenuRepository =>
+            _roleResourceMenuRepository ?? new GenericRepository<RoleResourceMenu>(_context);
+
+        public IGenericRepository<RoleUser> RoleUserRepository =>
+            _roleUserRepository ?? new GenericRepository<RoleUser>(_context);
+
+        public IGenericRepository<User> UserRepository =>
+            _userRepository ?? new GenericRepository<User>(_context);
+
         //public IGenericRepository<Aplicacion> AplicacionRepository => _aplicacionRepository ?? new GenericRepository<Aplicacion>(_context);
 
         //public IGenericRepository<AuditoriaLogin> AuditoriaLoginRepository => _auditoriaLoginRepository ?? new GenericRepository<AuditoriaLogin>(_context);

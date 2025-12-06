@@ -8,7 +8,8 @@ namespace SecuritySystem.Core.QueryFilters.Custom
 {
     public class PaginationQueryFilter
     {
-        public int TamanoDePagina { get; set; } = 10;
-        public int NumeroDePagina { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public int PageNumber { get; set; } = 1;
     }
+
 }

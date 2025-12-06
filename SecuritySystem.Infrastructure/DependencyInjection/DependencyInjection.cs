@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SecuritySystem.Core.Interfaces.Core;
 using SecuritySystem.Core.Interfaces.Core.SQLServer;

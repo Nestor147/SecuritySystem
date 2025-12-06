@@ -8,16 +8,26 @@ namespace SecuritySystem.Infrastructure.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        //public virtual DbSet<Aplicacion> Aplicaciones { get; set; }
-        //public virtual DbSet<AuditoriaLogin> AuditoriaLogin { get; set; }
-        //public virtual DbSet<DispositivoConocido> DispositivoConocido { get; set; }
-        //public virtual DbSet<IntentoFallidoLogin> IntentoFallidoLogin { get; set; }
-        //public virtual DbSet<RefreshToken> RefreshToken { get; set; }
-        //public virtual DbSet<Rol> Rol { get; set; }
-        //public virtual DbSet<RolUsuario> RolUsuario { get; set; }
-        //public virtual DbSet<TokenRevocado> TokenRevocado { get; set; }
-        //public virtual DbSet<UsuarioSistema> UsuarioSistema { get; set; }
-        //public virtual DbSet<Objeto> Objetos { get; set; }
+        public virtual DbSet<Application> Applications { get; set; }
+        public virtual DbSet<CryptoKey> CryptoKeys { get; set; }
+        public virtual DbSet<KnownDevice> KnownDevices { get; set; }
+        public virtual DbSet<LoginAttempt> LoginAttempts { get; set; }
+        public virtual DbSet<LoginAudit> LoginAudits { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public virtual DbSet<Resource> Resources { get; set; }
+        public virtual DbSet<ResourceEndpoint> ResourceEndpoints { get; set; }
+        public virtual DbSet<ResourceMenu> ResourceMenus { get; set; }
+
+        public virtual DbSet<RevokedToken> RevokedTokens { get; set; }
+
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<RoleEndpoint> RoleEndpoints { get; set; }
+        public virtual DbSet<RoleResourceMenu> RoleResourceMenus { get; set; }
+        public virtual DbSet<RoleUser> RoleUsers { get; set; }
+
+        public virtual DbSet<User> Users { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

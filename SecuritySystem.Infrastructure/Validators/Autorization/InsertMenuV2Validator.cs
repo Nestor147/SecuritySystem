@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using SecuritySystem.Core.QueryFilters.Autorization;
-using SecuritySystem.Infrastructure.Validators.Autorization;
 
 namespace SecuritySystem.Infrastructure.Validators.Security
 {
