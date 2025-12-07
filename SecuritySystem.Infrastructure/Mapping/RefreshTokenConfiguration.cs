@@ -13,7 +13,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
-            builder.ToTable("RefreshTokens", "SECURITY_SYSTEM");
+            builder.ToTable("RefreshTokens", "AUTORIZACION");
 
             builder.HasKey(e => e.Id);
 

@@ -11,7 +11,7 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
         private readonly AppDbContext _context;
         private IDbContextTransaction _transaction;
         // Repositories fields
-        private readonly IGenericRepository<Application> _applicationRepository;
+        private readonly IGenericRepository<Applications> _applicationRepository;
         private readonly IGenericRepository<CryptoKey> _cryptoKeyRepository;
         private readonly IGenericRepository<KnownDevice> _knownDeviceRepository;
         private readonly IGenericRepository<LoginAttempt> _loginAttemptRepository;
@@ -60,8 +60,8 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
         #region Metodos
 
         // Repositories properties
-        public IGenericRepository<Application> ApplicationRepository =>
-            _applicationRepository ?? new GenericRepository<Application>(_context);
+        public IGenericRepository<Applications> ApplicationRepository =>
+            _applicationRepository ?? new GenericRepository<Applications>(_context);
 
         public IGenericRepository<CryptoKey> CryptoKeyRepository =>
             _cryptoKeyRepository ?? new GenericRepository<CryptoKey>(_context);

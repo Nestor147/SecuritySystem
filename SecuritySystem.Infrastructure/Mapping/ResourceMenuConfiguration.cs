@@ -13,7 +13,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<ResourceMenu> builder)
         {
-            builder.ToTable("ResourceMenus", "SECURITY_SYSTEM");
+            builder.ToTable("ResourceMenus", "AUTORIZACION");
 
             builder.HasKey(e => e.Id);
 

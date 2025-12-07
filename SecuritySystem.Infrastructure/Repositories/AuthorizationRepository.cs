@@ -2,6 +2,7 @@
 using SecuritySystem.Core.Interfaces;
 using SecuritySystem.Core.Interfaces.Core.SQLServer.ADO;
 using SecuritySystem.Core.QueryFilters.Autorization;
+using SecuritySystem.Core.QueryFilters.Autorization.Request;
 using System.Data;
 using System.Linq;
 
@@ -29,7 +30,7 @@ namespace SecuritySystem.Infrastructure.Repositories
             return rows.Select(r => r.To<ApplicationQueryFilter>());
         }
 
-        public async Task<IEnumerable<UserApplicationsRequest>> GetApplicationsByUserId(string userId)
+        public async Task<IEnumerable<ApplicationsByUserRequest>> GetApplicationsByUserId(string userId)
         {
             var rows = await _ado.ExecuteEntitiesAsync(
                 "AUTORIZACION.GetApplicationsByUserId",
@@ -37,7 +38,7 @@ namespace SecuritySystem.Infrastructure.Repositories
                 new { id_usuario = Convert.ToInt32(userId) }
             );
 
-            return rows.Select(r => r.To<UserApplicationsRequest>());
+            return rows.Select(r => r.To<ApplicationsByUserRequest>());
         }
 
         public async Task<IEnumerable<ApplicationQueryFilter>> GetDuplicateApplications(ApplicationQueryFilter applicationQueryFilter)
@@ -57,7 +58,7 @@ namespace SecuritySystem.Infrastructure.Repositories
                 {
                     IdAplicacion = idAplicacion,
                     Sigla = applicationQueryFilter.Code,
-                    Descripcion = applicationQueryFilter.Name
+                    Descripcion = applicationQueryFilter.Description
                 }
             );
 
@@ -204,7 +205,7 @@ namespace SecuritySystem.Infrastructure.Repositories
 
         #region Menus / Role-Resource Menus
 
-        public async Task<IEnumerable<RoleContentQueryFilter>> GetMenuByApplication(string applicationId)
+        public async Task<IEnumerable<RoleContentQueryFilter>> GetMenuByApplication(string applicationId, int onlyActive)
         {
             // Antes: Autorizacion.ObtenerMenuCompleto
             var rows = await _ado.ExecuteEntitiesAsync(
@@ -213,7 +214,7 @@ namespace SecuritySystem.Infrastructure.Repositories
                 new
                 {
                     IdAplicacion = Convert.ToInt32(applicationId),
-                    SoloActivos = 1 // igual que antes, solo activos
+                    SoloActivos = onlyActive // igual que antes, solo activos
                 }
             );
 

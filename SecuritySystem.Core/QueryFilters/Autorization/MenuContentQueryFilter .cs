@@ -3,7 +3,7 @@ using SecuritySystem.Core.QueryFilters.Custom;
 
 namespace SecuritySystem.Core.QueryFilters.Autorization
 {
-    public class ContentMenuV2QueryFilter : AuditFieldsQueryFilter
+    public class MenuContentQueryFilter : AuditFieldsQueryFilter
     {
         #region Properties
 
@@ -18,6 +18,7 @@ namespace SecuritySystem.Core.QueryFilters.Autorization
         public string ResourceId { get; set; }
         public int ResourceType { get; set; }
 
+        // Compatibilidad con JSON anterior: sigue llegando "IdAplicacion"
         [JsonIgnore]
         [JsonProperty("IdAplicacion")]
         public string ApplicationId { get; set; }
@@ -27,20 +28,20 @@ namespace SecuritySystem.Core.QueryFilters.Autorization
 
         /// <summary>
         /// 1: New record
-        /// 2: Update record
+        /// 2: Edit record
         /// 3: Delete record
         /// </summary>
         public int Status { get; set; }
 
-        public List<ContentMenuV2QueryFilter> SubLinks { get; set; }
+        public List<MenuContentQueryFilter> SubLinks { get; set; }
 
         #endregion
 
         #region Constructors
 
-        public ContentMenuV2QueryFilter()
+        public MenuContentQueryFilter()
         {
-            SubLinks = new List<ContentMenuV2QueryFilter>();
+            SubLinks = new List<MenuContentQueryFilter>();
         }
 
         #endregion

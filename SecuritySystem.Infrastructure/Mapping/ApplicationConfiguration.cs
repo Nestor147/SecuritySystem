@@ -4,11 +4,11 @@ using SecuritySystem.Core.Entities;
 
 namespace SecuritySystem.Infrastructure.Mapping
 {
-    public class ApplicationConfiguration : IEntityTypeConfiguration<Application>
+    public class ApplicationConfiguration : IEntityTypeConfiguration<Applications>
     {
-        public void Configure(EntityTypeBuilder<Application> builder)
+        public void Configure(EntityTypeBuilder<Applications> builder)
         {
-            builder.ToTable("Applications", "SECURITY_SYSTEM");
+            builder.ToTable("Applications", "AUTORIZACION");
 
             builder.HasKey(e => e.Id);
 

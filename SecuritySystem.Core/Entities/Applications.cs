@@ -2,7 +2,7 @@
 
 namespace SecuritySystem.Core.Entities
 {
-    public class Application : AuditFields
+    public class Applications : AuditFields
     {
         public int Id { get; set; }
         public string Code { get; set; }          // e.g. "ATACADO"

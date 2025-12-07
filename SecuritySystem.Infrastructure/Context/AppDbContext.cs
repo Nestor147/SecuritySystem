@@ -8,7 +8,7 @@ namespace SecuritySystem.Infrastructure.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public virtual DbSet<Application> Applications { get; set; }
+        public virtual DbSet<Applications> Applications { get; set; }
         public virtual DbSet<CryptoKey> CryptoKeys { get; set; }
         public virtual DbSet<KnownDevice> KnownDevices { get; set; }
         public virtual DbSet<LoginAttempt> LoginAttempts { get; set; }

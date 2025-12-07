@@ -1,5 +1,6 @@
 ﻿using SecuritySystem.Core.GetQueryFilter.Autorization;
 using SecuritySystem.Core.QueryFilters.Autorization;
+using SecuritySystem.Core.QueryFilters.Autorization.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace SecuritySystem.Core.Interfaces
 
         Task<IEnumerable<ApplicationQueryFilter>> GetDuplicateApplications(ApplicationQueryFilter applicationQueryFilter);
         Task<IEnumerable<ApplicationQueryFilter>> GetApplications();
-        Task<IEnumerable<UserApplicationsRequest>> GetApplicationsByUserId(string userId);
+        Task<IEnumerable<ApplicationsByUserRequest>> GetApplicationsByUserId(string userId);
 
         Task<IEnumerable<ResourceQueryFilter>> GetResources();
         Task<IEnumerable<ResourceQueryFilter>> GetDuplicateResources(ResourceQueryFilter resourceQueryFilter);
@@ -34,7 +35,7 @@ namespace SecuritySystem.Core.Interfaces
         Task<IEnumerable<RoleResourceMenuQueryFilter>> GetRoleResourcesForUser(GetMenuQueryFilter getMenuQueryFilter);
         Task<IEnumerable<RoleQueryFilter>> GetDuplicateRoles(RoleQueryFilter roleQueryFilter);
         Task<IEnumerable<RoleResourceMenuQueryFilter>> GetMenuByRole(GetMenuQueryFilter getMenuQueryFilter);
-        Task<IEnumerable<RoleContentQueryFilter>> GetMenuByApplication(string applicationId);
+        Task<IEnumerable<RoleContentQueryFilter>> GetMenuByApplication(string applicationId, int onlyActive);
 
         Task<IEnumerable<UserByDocOrNameResultQueryFilter>> SearchUsersByCriteria(
             string? searchCriteria,

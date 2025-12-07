@@ -8,7 +8,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<RoleResourceMenu> builder)
         {
-            builder.ToTable("RoleResourceMenus", "SECURITY_SYSTEM");
+            builder.ToTable("RoleResourceMenus", "AUTORIZACION");
 
             builder.HasKey(e => e.Id);
 

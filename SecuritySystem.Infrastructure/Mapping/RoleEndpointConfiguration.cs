@@ -8,7 +8,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<RoleEndpoint> builder)
         {
-            builder.ToTable("RoleEndpoints", "SECURITY_SYSTEM");
+            builder.ToTable("RoleEndpoints", "AUTORIZACION");
 
             builder.HasKey(e => e.Id);
 

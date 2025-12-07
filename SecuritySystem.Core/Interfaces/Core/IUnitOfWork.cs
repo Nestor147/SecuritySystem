@@ -5,7 +5,7 @@ namespace SecuritySystem.Core.Interfaces.Core
 {
     public interface IUnitOfWork : IDisposable
     {
-        public IGenericRepository<Application> ApplicationRepository { get; }
+        public IGenericRepository<Applications> ApplicationRepository { get; }
 
         // Users
         public IGenericRepository<User> UserRepository { get; }

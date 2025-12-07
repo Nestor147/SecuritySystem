@@ -13,7 +13,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<RoleUser> builder)
         {
-            builder.ToTable("RoleUsers", "SECURITY_SYSTEM");
+            builder.ToTable("RoleUsers", "AUTORIZACION");
 
             builder.HasKey(e => e.Id);
 

@@ -2,10 +2,8 @@
 {
     public class ResponsePostDetail
     {
-        public string Proceso { get; set; }
-        public int FilasAfectadas { get; set; }
-        public string IdGenerado { get; set; }
-
-
+        public string Process { get; set; }
+        public int RowsAffected { get; set; }
+        public string GeneratedId { get; set; }
     }
 }

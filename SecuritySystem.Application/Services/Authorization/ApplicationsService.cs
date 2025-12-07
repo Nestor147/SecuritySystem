@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using SecuritySystem.Application.Interfaces.Authorization;
 using SecuritySystem.Core.Custom.DisplayFormat;
+using SecuritySystem.Core.Entities;
 using SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi;
 using SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi.Details;
 using SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi.DisplayFormat;
@@ -11,6 +12,7 @@ using SecuritySystem.Core.Interfaces.Core;
 using SecuritySystem.Core.Interfaces.Validators;
 using SecuritySystem.Core.Interfaces.Validators.Helpers;
 using SecuritySystem.Core.QueryFilters.Autorization;
+using SecuritySystem.Core.QueryFilters.Autorization.Request;
 using SecuritySystem.Core.QueryFilters.Helper;
 using System.Net;
 
@@ -76,7 +78,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 #region Business Rules
 
-                var duplicatedApplication = await _authorizationRepository.GetDuplicatedApplication(applicationQueryFilter);
+                var duplicatedApplication = await _authorizationRepository.GetDuplicateApplications(applicationQueryFilter);
 
                 if (duplicatedApplication.Any())
                 {
@@ -96,16 +98,16 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 #endregion
 
-                var application = _unitOfWork.ApplicationRepository.Insert(new Application
+                var application = _unitOfWork.ApplicationRepository.Insert(new Applications
                 {
                     Code = applicationQueryFilter.Code,
-                    Name = applicationQueryFilter.Name,
+                    Name = applicationQueryFilter.Description,
                     Url = applicationQueryFilter.Url,
                     Icon = applicationQueryFilter.Icon,
                     CreatedBy = "SECURITY_SYSTEM"
                 });
 
-                if (application.FilasAfectadas > 0)
+                if (application.RowsAffected > 0)
                 {
                     return new ResponsePost
                     {
@@ -152,7 +154,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 #region Business Rules
 
-                var duplicatedApplication = await _authorizationRepository.GetDuplicatedApplication(applicationQueryFilter);
+                var duplicatedApplication = await _authorizationRepository.GetDuplicateApplications(applicationQueryFilter);
 
                 if (duplicatedApplication.Any())
                 {
@@ -173,11 +175,11 @@ namespace SecuritySystem.Application.Services.Authorization
                 #endregion
 
                 var application = _unitOfWork.ApplicationRepository.UpdateCustom(
-                    new Application
+                    new Applications
                     {
                         Id = Convert.ToInt32(applicationQueryFilter.Id),
                         Code = applicationQueryFilter.Code,
-                        Name = applicationQueryFilter.Name,
+                        Name = applicationQueryFilter.Description,
                         Url = applicationQueryFilter.Url,
                         Icon = applicationQueryFilter.Icon,
                         CreatedBy = string.IsNullOrWhiteSpace(applicationQueryFilter.CreatedBy)
@@ -193,7 +195,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     f => f.CreatedBy
                 );
 
-                if (application.FilasAfectadas > 0)
+                if (application.RowsAffected > 0)
                 {
                     return new ResponsePost
                     {
@@ -239,7 +241,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 #endregion
 
                 var application = _unitOfWork.ApplicationRepository.UpdateCustom(
-                    new Application
+                    new Applications
                     {
                         Id = Convert.ToInt32(idFilter.Id),
                         RecordStatus = 0
@@ -247,7 +249,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     a => a.RecordStatus
                 );
 
-                if (application.FilasAfectadas > 0)
+                if (application.RowsAffected > 0)
                 {
                     return new ResponsePost
                     {
@@ -300,7 +302,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         Id = application.Id.ToString(),
                         Code = application.Code,
-                        Name = application.Name,
+                        Description = application.Name,
                         Url = application.Url,
                         Icon = application.Icon,
                         RecordStatus = application.RecordStatus,
@@ -427,7 +429,7 @@ namespace SecuritySystem.Application.Services.Authorization
                                 new RowModel
                                 {
                                     TipoContenido = TipoContenidoRowModel.Texto,
-                                    Contenido = $"{app.Name}"
+                                    Contenido = $"{app.Description}"
                                 }
                             }
                         });
@@ -535,7 +537,7 @@ namespace SecuritySystem.Application.Services.Authorization
                         _comboRowModelList.Add(new RowModelCmb
                         {
                             Valor = app.Id.ToString(),
-                            Descripcion = app.Name,
+                            Descripcion = app.Description,
                             EstaSeleccionado = _comboIndex == 0
                         });
 
@@ -661,14 +663,14 @@ namespace SecuritySystem.Application.Services.Authorization
 
             try
             {
-                if (!string.IsNullOrEmpty(filter.Name))
+                if (!string.IsNullOrEmpty(filter.Description))
                 {
                     try
                     {
                         filteredApplications = filteredApplications
                             .Where(x =>
-                                x.Name != null &&
-                                x.Name.Contains(filter.Name, StringComparison.CurrentCultureIgnoreCase))
+                                x.Description != null &&
+                                x.Description.Contains(filter.Description, StringComparison.CurrentCultureIgnoreCase))
                             .ToList();
                     }
                     catch (NullReferenceException)

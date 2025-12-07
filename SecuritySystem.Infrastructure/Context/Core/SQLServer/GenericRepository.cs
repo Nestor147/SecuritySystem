@@ -1,12 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi;
 using SecuritySystem.Core.Interfaces.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
 {
@@ -40,14 +35,14 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
         {
             _dbSet.Add(entity);
             int affected = _context.SaveChanges();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         public ResponsePostDetail Insert(List<T> entities, string proceso = "INSERT")
         {
             _dbSet.AddRange(entities);
             int affected = _context.SaveChanges();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         public async Task<ResponsePostDetail> InsertAsync(T entity, string proceso = "INSERT")
@@ -65,9 +60,9 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
             }
             return new ResponsePostDetail
             {
-                Proceso = proceso,
-                FilasAfectadas = affected,
-                IdGenerado = idGenerado
+                Process = proceso,
+                RowsAffected = affected,
+                GeneratedId = idGenerado
             };
         }
 
@@ -76,21 +71,21 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
         {
             await _dbSet.AddRangeAsync(entities);
             int affected = await _context.SaveChangesAsync();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         public ResponsePostDetail Update(T entity, string proceso = "UPDATE")
         {
             _dbSet.Update(entity);
             int affected = _context.SaveChanges();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         public ResponsePostDetail Update(List<T> entities, string proceso = "UPDATE")
         {
             _dbSet.UpdateRange(entities);
             int affected = _context.SaveChanges();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         public ResponsePostDetail UpdateCustom(T entity, params Expression<Func<T, object>>[] includeProperties)
@@ -118,7 +113,7 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
                 entry.Property(prop).IsModified = true;
 
             var affected = _context.SaveChanges();
-            return new ResponsePostDetail { Proceso = "UPDATE CUSTOM", FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = "UPDATE CUSTOM", RowsAffected = affected };
         }
 
 
@@ -127,21 +122,21 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
             var entity = await GetByIdAsync(id);
             _dbSet.Remove(entity);
             int affected = await _context.SaveChangesAsync();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         public ResponsePostDetail Delete(T entity, string proceso = "DELETE")
         {
             _dbSet.Remove(entity);
             int affected = _context.SaveChanges();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         public ResponsePostDetail Delete(List<T> entities, string proceso = "DELETE")
         {
             _dbSet.RemoveRange(entities);
             int affected = _context.SaveChanges();
-            return new ResponsePostDetail { Proceso = proceso, FilasAfectadas = affected };
+            return new ResponsePostDetail { Process = proceso, RowsAffected = affected };
         }
 
         //Solo para autenticación
