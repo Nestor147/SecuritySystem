@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8 d17.14
+VisualStudioVersion = 17.14.36623.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuritySystem", "SecuritySystem\SecuritySystem.csproj", "{C0F412A8-5BDB-4E20-A7AC-D12FA269213E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuritySystem.Web", "SecuritySystem\SecuritySystem.Web.csproj", "{C0F412A8-5BDB-4E20-A7AC-D12FA269213E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuritySystem.Application", "SecuritySystem.Application\SecuritySystem.Application.csproj", "{CA577B84-4ADA-4B99-BB5F-8D1BE63B4F7C}"
 EndProject

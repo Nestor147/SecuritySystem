@@ -38,6 +38,8 @@ namespace SecuritySystem.Infrastructure.DependencyInjection
             services.AddScoped<IAuthorizationRepository, AuthorizationRepository>();
             services.AddScoped<IApplicationsService, ApplicationsService>();
             services.AddScoped<IMenuService, MenuService>();
+            services.AddScoped<IResourceService, ResourceService>();
+            services.AddScoped<IRoleService, RoleService>();
             //services.AddScoped<IObjetoService, ObjetoService>();
             //services.AddScoped<IRolService, RolService>();
 

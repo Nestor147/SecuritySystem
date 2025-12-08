@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SecuritySystem.Application\SecuritySystem.Application.csproj" />
     <ProjectReference Include="..\SecuritySystem.Core\SecuritySystem.Core.csproj" />
+    <ProjectReference Include="..\SecuritySystem.Infrastructure\SecuritySystem.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

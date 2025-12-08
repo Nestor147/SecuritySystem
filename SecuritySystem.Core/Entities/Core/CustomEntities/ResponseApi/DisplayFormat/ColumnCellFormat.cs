@@ -2,12 +2,17 @@
 {
     public class ColumnCellFormat
     {
-        public string NombreColumna { get; set; }
-        public RowModel[] ContenidoCelda { get; set; }
+        public string ColumnName { get; set; }
+        public RowModel[] CellContent { get; set; }
 
-        public static ColumnCellFormat Crear(string nombreColumna, RowModel[] contenidoCelda)
+        public static ColumnCellFormat Create(string columnName, RowModel[] cellContent)
         {
-            return new ColumnCellFormat() { NombreColumna = nombreColumna, ContenidoCelda = contenidoCelda };
+            return new ColumnCellFormat()
+            {
+                ColumnName = columnName,
+                CellContent = cellContent
+            };
         }
     }
+
 }

@@ -21,10 +21,10 @@ namespace SecuritySystem.Infrastructure.Mapping
                    .HasMaxLength(25)
                    .HasColumnName("Code");
 
-            builder.Property(e => e.Name)
+            builder.Property(e => e.Description)
                    .IsRequired()
                    .HasMaxLength(250)
-                   .HasColumnName("Name");
+                   .HasColumnName("Description");
 
             builder.Property(e => e.Url)
                    .HasMaxLength(250)

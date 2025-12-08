@@ -2,26 +2,25 @@
 {
     public class Pagination
     {
-        public int TotalRegistros { get; set; }
-        public int TamanoDePagina { get; set; }
-        public int PaginaActual { get; set; }
-        public int TotalPaginas { get; set; }
-        public bool TienePaginaAnterior { get; set; }
-        public bool TienePaginaSiguiente { get; set; }
+        public int TotalRecords { get; set; }
+        public int PageSize { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+        public bool HasPreviousPage { get; set; }
+        public bool HasNextPage { get; set; }
 
         public Pagination()
         {
-
         }
 
-        public Pagination(ListaPaginada<object> lista)
+        public Pagination(PaginatedList<object> list)
         {
-            TotalRegistros = lista.TotalRegistros;
-            TamanoDePagina = lista.TamanoDePagina;
-            PaginaActual = lista.PaginaActual;
-            TotalPaginas = lista.TotalPaginas;
-            TienePaginaAnterior = lista.TienePaginaAnterior;
-            TienePaginaSiguiente = lista.TienePaginaSiguiente;
+            TotalRecords = list.TotalRecords;
+            PageSize = list.PageSize;
+            CurrentPage = list.CurrentPage;
+            TotalPages = list.TotalPages;
+            HasPreviousPage = list.HasPreviousPage;
+            HasNextPage = list.HasNextPage;
         }
     }
 }

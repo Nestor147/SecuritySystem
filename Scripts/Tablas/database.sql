@@ -1,20 +1,33 @@
 ------------------------------------------------------------
--- 1. Create schema SECURITY_SYSTEM (if not exists)
+-- 1. Create schemas if they do not exist
 ------------------------------------------------------------
-IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'SECURITY_SYSTEM')
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Autenticacion')
 BEGIN
-    EXEC('CREATE SCHEMA SECURITY_SYSTEM');
+    EXEC('CREATE SCHEMA Autenticacion');
+END;
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'Autorizacion')
+BEGIN
+    EXEC('CREATE SCHEMA Autorizacion');
 END;
 GO
 
 ------------------------------------------------------------
--- 2. Table: Applications
---    (Modules / systems that use this auth engine)
+-- 2. AUTHORIZATION TABLES (schema: Autorizacion)
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.Applications (
+
+------------------------------------------------------------
+-- 2.1 Applications
+------------------------------------------------------------
+IF OBJECT_ID('Autorizacion.Applications', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.Applications;
+GO
+
+CREATE TABLE Autorizacion.Applications (
     Id           INT IDENTITY(1,1) CONSTRAINT PK_Applications PRIMARY KEY,
     Code         NVARCHAR(25)  NOT NULL,     -- short code, e.g. "ATACADO"
-    Name         NVARCHAR(250) NOT NULL,     -- descriptive name
+    Description         NVARCHAR(250) NOT NULL,     -- descriptive name
     Url          NVARCHAR(250) NULL,
     Icon         NVARCHAR(50)  NULL,
     RecordStatus INT           NOT NULL DEFAULT 1,
@@ -24,27 +37,32 @@ CREATE TABLE SECURITY_SYSTEM.Applications (
 GO
 
 ------------------------------------------------------------
--- 3. Table: Users (internal users of the auth system)
+-- 2.2 Users (AUTHENTICATION USERS: schema Autenticacion)
+--     (se crea aquí por dependencia de FKs de Autorizacion.RoleUsers)
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.Users (
-    Id               INT IDENTITY(1,1) CONSTRAINT PK_Users PRIMARY KEY,
-    ExternalUserId   INT           NULL,      -- optional link to another system
+IF OBJECT_ID('Autenticacion.Users', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.Users;
+GO
 
-    Username         NVARCHAR(50)  NOT NULL,
-    Email            NVARCHAR(150) NULL,
+CREATE TABLE Autenticacion.Users (
+    Id                 INT IDENTITY(1,1) CONSTRAINT PK_Users PRIMARY KEY,
+    ExternalUserId     INT             NULL,      -- optional link to another system
 
-    PasswordHash     NVARCHAR(300) NOT NULL,
-    LastPasswordChange DATETIME2   NULL,
+    Username           NVARCHAR(50)    NOT NULL,
+    Email              NVARCHAR(150)   NULL,
 
-    IsLocked         BIT           NOT NULL DEFAULT 0,
-    LockDate         DATETIME2     NULL,
+    PasswordHash       NVARCHAR(300)   NOT NULL,
+    LastPasswordChange DATETIME2       NULL,
 
-    IsNewUser        BIT           NOT NULL DEFAULT 0,
-    KeepLoggedIn     BIT           NOT NULL DEFAULT 0,
+    IsLocked           BIT             NOT NULL DEFAULT 0,
+    LockDate           DATETIME2       NULL,
 
-    RecordStatus     INT           NOT NULL DEFAULT 1,
-    CreatedAt        DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    CreatedBy        NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
+    IsNewUser          BIT             NOT NULL DEFAULT 0,
+    KeepLoggedIn       BIT             NOT NULL DEFAULT 0,
+
+    RecordStatus       INT             NOT NULL DEFAULT 1,
+    CreatedAt          DATETIME2       NOT NULL DEFAULT SYSUTCDATETIME(),
+    CreatedBy          NVARCHAR(100)   NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT UQ_Users_Username UNIQUE (Username),
     CONSTRAINT UQ_Users_Email    UNIQUE (Email)
@@ -52,51 +70,61 @@ CREATE TABLE SECURITY_SYSTEM.Users (
 GO
 
 ------------------------------------------------------------
--- 4. Table: Roles (per application)
+-- 2.3 Roles (per Application)
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.Roles (
-    Id           INT IDENTITY(1,1) CONSTRAINT PK_Roles PRIMARY KEY,
-    ApplicationId INT          NOT NULL,
-    Name         NVARCHAR(50)  NOT NULL,
-    Description  NVARCHAR(100) NOT NULL,
-    RecordStatus INT           NOT NULL DEFAULT 1,
-    CreatedAt    DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
+IF OBJECT_ID('Autorizacion.Roles', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.Roles;
+GO
+
+CREATE TABLE Autorizacion.Roles (
+    Id            INT IDENTITY(1,1) CONSTRAINT PK_Roles PRIMARY KEY,
+    ApplicationId INT           NOT NULL,
+    Name          NVARCHAR(50)  NOT NULL,
+    Description   NVARCHAR(100) NOT NULL,
+    RecordStatus  INT           NOT NULL DEFAULT 1,
+    CreatedAt     DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
+    CreatedBy     NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_Roles_Applications FOREIGN KEY (ApplicationId)
-        REFERENCES SECURITY_SYSTEM.Applications(Id),
+        REFERENCES Autorizacion.Applications(Id),
 
     CONSTRAINT UQ_Roles_Application_Name UNIQUE (ApplicationId, Name)
 );
 GO
 
 ------------------------------------------------------------
--- 5. Table: Resources
---    (Pages / nodes / components for menu & permissions)
+-- 2.4 Resources
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.Resources (
-    Id           INT IDENTITY(1,1) CONSTRAINT PK_Resources PRIMARY KEY,
-    ApplicationId INT          NOT NULL,
-    Page         NVARCHAR(50)  NULL,          -- route or page name
-    Name         NVARCHAR(100) NOT NULL,      -- short description
-    Description  NVARCHAR(350) NOT NULL,      -- detailed description
-    ResourceType INT           NOT NULL,      -- 1: Node, 2: Page, etc.
-    IconName     NVARCHAR(100) NOT NULL,
-    IsNew        BIT           NOT NULL DEFAULT 0,
-    RecordStatus INT           NOT NULL DEFAULT 1,
-    CreatedAt    DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
+IF OBJECT_ID('Autorizacion.Resources', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.Resources;
+GO
+
+CREATE TABLE Autorizacion.Resources (
+    Id            INT IDENTITY(1,1) CONSTRAINT PK_Resources PRIMARY KEY,
+    ApplicationId INT           NOT NULL,
+    Page          NVARCHAR(50)  NULL,          -- route or page name
+    Name          NVARCHAR(100) NOT NULL,      -- short description
+    Description   NVARCHAR(350) NOT NULL,      -- detailed description
+    ResourceType  INT           NOT NULL,      -- 1: Node, 2: Page, etc.
+    IconName      NVARCHAR(100) NOT NULL,
+    IsNew         BIT           NOT NULL DEFAULT 0,
+    RecordStatus  INT           NOT NULL DEFAULT 1,
+    CreatedAt     DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
+    CreatedBy     NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_Resources_Applications FOREIGN KEY (ApplicationId)
-        REFERENCES SECURITY_SYSTEM.Applications(Id)
+        REFERENCES Autorizacion.Applications(Id)
 );
 GO
 
 ------------------------------------------------------------
--- 6. Table: ResourceMenus
---    (Position of resources in the menu tree)
+-- 2.5 ResourceMenus
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.ResourceMenus (
+IF OBJECT_ID('Autorizacion.ResourceMenus', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.ResourceMenus;
+GO
+
+CREATE TABLE Autorizacion.ResourceMenus (
     Id           INT IDENTITY(1,1) CONSTRAINT PK_ResourceMenus PRIMARY KEY,
     ResourceId   INT           NOT NULL,
     Level        INT           NOT NULL,
@@ -106,17 +134,20 @@ CREATE TABLE SECURITY_SYSTEM.ResourceMenus (
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_ResourceMenus_Resources FOREIGN KEY (ResourceId)
-        REFERENCES SECURITY_SYSTEM.Resources(Id)
+        REFERENCES Autorizacion.Resources(Id)
     -- If you want each resource to appear only once in the menu:
     -- ,CONSTRAINT UQ_ResourceMenus_Resource UNIQUE (ResourceId)
 );
 GO
 
 ------------------------------------------------------------
--- 7. Table: ResourceEndpoints
---    (API endpoints / actions linked to a resource)
+-- 2.6 ResourceEndpoints
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.ResourceEndpoints (
+IF OBJECT_ID('Autorizacion.ResourceEndpoints', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.ResourceEndpoints;
+GO
+
+CREATE TABLE Autorizacion.ResourceEndpoints (
     Id           INT IDENTITY(1,1) CONSTRAINT PK_ResourceEndpoints PRIMARY KEY,
     ResourceId   INT           NOT NULL,
     ServiceType  INT           NOT NULL,          -- e.g. 1=GET, 2=POST or custom code
@@ -127,37 +158,44 @@ CREATE TABLE SECURITY_SYSTEM.ResourceEndpoints (
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_ResourceEndpoints_Resources FOREIGN KEY (ResourceId)
-        REFERENCES SECURITY_SYSTEM.Resources(Id)
+        REFERENCES Autorizacion.Resources(Id)
 );
 GO
 
 ------------------------------------------------------------
--- 8. Table: RoleUsers
---    (Assignment of roles to users)
+-- 2.7 RoleUsers
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.RoleUsers (
+IF OBJECT_ID('Autorizacion.RoleUsers', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.RoleUsers;
+GO
+
+CREATE TABLE Autorizacion.RoleUsers (
     Id           INT IDENTITY(1,1) CONSTRAINT PK_RoleUsers PRIMARY KEY,
     RoleId       INT           NOT NULL,
     UserId       INT           NOT NULL,
+    IsInspector  BIT           NOT NULL DEFAULT 0,  -- agregado
     RecordStatus INT           NOT NULL DEFAULT 1,
     CreatedAt    DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_RoleUsers_Roles FOREIGN KEY (RoleId)
-        REFERENCES SECURITY_SYSTEM.Roles(Id),
+        REFERENCES Autorizacion.Roles(Id),
 
     CONSTRAINT FK_RoleUsers_Users FOREIGN KEY (UserId)
-        REFERENCES SECURITY_SYSTEM.Users(Id),
+        REFERENCES Autenticacion.Users(Id),
 
     CONSTRAINT UQ_RoleUsers_Role_User UNIQUE (RoleId, UserId)
 );
 GO
 
 ------------------------------------------------------------
--- 9. Table: RoleResourceMenus
---    (Which role can see which resource in the menu)
+-- 2.8 RoleResourceMenus
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.RoleResourceMenus (
+IF OBJECT_ID('Autorizacion.RoleResourceMenus', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.RoleResourceMenus;
+GO
+
+CREATE TABLE Autorizacion.RoleResourceMenus (
     Id           INT IDENTITY(1,1) CONSTRAINT PK_RoleResourceMenus PRIMARY KEY,
     RoleId       INT           NOT NULL,
     ResourceId   INT           NOT NULL,
@@ -166,43 +204,55 @@ CREATE TABLE SECURITY_SYSTEM.RoleResourceMenus (
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_RoleResourceMenus_Roles FOREIGN KEY (RoleId)
-        REFERENCES SECURITY_SYSTEM.Roles(Id),
+        REFERENCES Autorizacion.Roles(Id),
 
     CONSTRAINT FK_RoleResourceMenus_Resources FOREIGN KEY (ResourceId)
-        REFERENCES SECURITY_SYSTEM.Resources(Id),
+        REFERENCES Autorizacion.Resources(Id),
 
     CONSTRAINT UQ_RoleResourceMenus_Role_Resource UNIQUE (RoleId, ResourceId)
 );
 GO
 
 ------------------------------------------------------------
--- 10. Table: RoleEndpoints
---      (Permissions at endpoint/action level)
---      Normalized: references ResourceEndpoints
+-- 2.9 RoleEndpoints
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.RoleEndpoints (
-    Id                INT IDENTITY(1,1) CONSTRAINT PK_RoleEndpoints PRIMARY KEY,
-    RoleId            INT           NOT NULL,
-    ResourceEndpointId INT          NOT NULL,
-    RecordStatus      INT           NOT NULL DEFAULT 1,
-    CreatedAt         DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    CreatedBy         NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
+IF OBJECT_ID('Autorizacion.RoleEndpoints', 'U') IS NOT NULL
+    DROP TABLE Autorizacion.RoleEndpoints;
+GO
+
+CREATE TABLE Autorizacion.RoleEndpoints (
+    Id                 INT IDENTITY(1,1) CONSTRAINT PK_RoleEndpoints PRIMARY KEY,
+    RoleId             INT           NOT NULL,
+    ResourceEndpointId INT           NOT NULL,
+    ServiceType        INT           NULL,          -- agregado
+    Endpoint           NVARCHAR(500) NULL,          -- agregado
+    PageName           NVARCHAR(350) NULL,          -- agregado
+    RecordStatus       INT           NOT NULL DEFAULT 1,
+    CreatedAt          DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
+    CreatedBy          NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_RoleEndpoints_Roles FOREIGN KEY (RoleId)
-        REFERENCES SECURITY_SYSTEM.Roles(Id),
+        REFERENCES Autorizacion.Roles(Id),
 
     CONSTRAINT FK_RoleEndpoints_ResourceEndpoints FOREIGN KEY (ResourceEndpointId)
-        REFERENCES SECURITY_SYSTEM.ResourceEndpoints(Id),
+        REFERENCES Autorizacion.ResourceEndpoints(Id),
 
     CONSTRAINT UQ_RoleEndpoints_Role_Endpoint UNIQUE (RoleId, ResourceEndpointId)
 );
 GO
 
 ------------------------------------------------------------
--- 11. Table: RefreshTokens
---      (Refresh tokens for JWT, with hash, IP, UA, etc.)
+-- 3. AUTHENTICATION TABLES (schema: Autenticacion)
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.RefreshTokens (
+
+------------------------------------------------------------
+-- 3.1 RefreshTokens
+------------------------------------------------------------
+IF OBJECT_ID('Autenticacion.RefreshTokens', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.RefreshTokens;
+GO
+
+CREATE TABLE Autenticacion.RefreshTokens (
     Id               UNIQUEIDENTIFIER CONSTRAINT PK_RefreshTokens PRIMARY KEY,
     UserId           INT           NOT NULL,
     TokenHash        NVARCHAR(500) NOT NULL,   -- hashed or encrypted refresh token
@@ -217,19 +267,22 @@ CREATE TABLE SECURITY_SYSTEM.RefreshTokens (
     CreatedBy        NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_RefreshTokens_Users FOREIGN KEY (UserId)
-        REFERENCES SECURITY_SYSTEM.Users(Id)
+        REFERENCES Autenticacion.Users(Id)
 );
 GO
 
 CREATE INDEX IX_RefreshTokens_UserId
-    ON SECURITY_SYSTEM.RefreshTokens (UserId);
+    ON Autenticacion.RefreshTokens (UserId);
 GO
 
 ------------------------------------------------------------
--- 12. Table: LoginAttempts
---      (Record of login attempts, successful or not)
+-- 3.2 LoginAttempts
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.LoginAttempts (
+IF OBJECT_ID('Autenticacion.LoginAttempts', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.LoginAttempts;
+GO
+
+CREATE TABLE Autenticacion.LoginAttempts (
     Id           INT IDENTITY(1,1) CONSTRAINT PK_LoginAttempts PRIMARY KEY,
     UserId       INT           NULL,       -- NULL if user could not be resolved
     Username     NVARCHAR(50)  NOT NULL,
@@ -242,19 +295,22 @@ CREATE TABLE SECURITY_SYSTEM.LoginAttempts (
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_LoginAttempts_Users FOREIGN KEY (UserId)
-        REFERENCES SECURITY_SYSTEM.Users(Id)
+        REFERENCES Autenticacion.Users(Id)
 );
 GO
 
 CREATE INDEX IX_LoginAttempts_Username_AttemptedAt
-    ON SECURITY_SYSTEM.LoginAttempts (Username, AttemptedAt);
+    ON Autenticacion.LoginAttempts (Username, AttemptedAt);
 GO
 
 ------------------------------------------------------------
--- 13. Table: RevokedTokens
---      (JWT blacklist by JTI)
+-- 3.3 RevokedTokens
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.RevokedTokens (
+IF OBJECT_ID('Autenticacion.RevokedTokens', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.RevokedTokens;
+GO
+
+CREATE TABLE Autenticacion.RevokedTokens (
     Jti          UNIQUEIDENTIFIER CONSTRAINT PK_RevokedTokens PRIMARY KEY,
     UserId       INT           NOT NULL,
     Reason       NVARCHAR(250) NULL,
@@ -264,19 +320,22 @@ CREATE TABLE SECURITY_SYSTEM.RevokedTokens (
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_RevokedTokens_Users FOREIGN KEY (UserId)
-        REFERENCES SECURITY_SYSTEM.Users(Id)
+        REFERENCES Autenticacion.Users(Id)
 );
 GO
 
 CREATE INDEX IX_RevokedTokens_UserId
-    ON SECURITY_SYSTEM.RevokedTokens (UserId);
+    ON Autenticacion.RevokedTokens (UserId);
 GO
 
 ------------------------------------------------------------
--- 14. Table: KnownDevices
---      (Device fingerprint / trusted devices)
+-- 3.4 KnownDevices
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.KnownDevices (
+IF OBJECT_ID('Autenticacion.KnownDevices', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.KnownDevices;
+GO
+
+CREATE TABLE Autenticacion.KnownDevices (
     Id              INT IDENTITY(1,1) CONSTRAINT PK_KnownDevices PRIMARY KEY,
     UserId          INT           NOT NULL,
     FingerprintHash NVARCHAR(300) NOT NULL,
@@ -288,17 +347,20 @@ CREATE TABLE SECURITY_SYSTEM.KnownDevices (
     CreatedBy       NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_KnownDevices_Users FOREIGN KEY (UserId)
-        REFERENCES SECURITY_SYSTEM.Users(Id),
+        REFERENCES Autenticacion.Users(Id),
 
     CONSTRAINT UQ_KnownDevices_User_Fingerprint UNIQUE (UserId, FingerprintHash)
 );
 GO
 
 ------------------------------------------------------------
--- 15. Table: LoginAudit
---      (Audit of logins: success, error message, etc.)
+-- 3.5 LoginAudit
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.LoginAudit (
+IF OBJECT_ID('Autenticacion.LoginAudit', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.LoginAudit;
+GO
+
+CREATE TABLE Autenticacion.LoginAudit (
     Id           INT IDENTITY(1,1) CONSTRAINT PK_LoginAudit PRIMARY KEY,
     UserId       INT           NULL,
     Username     NVARCHAR(50)  NULL,
@@ -312,57 +374,46 @@ CREATE TABLE SECURITY_SYSTEM.LoginAudit (
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_LoginAudit_Users FOREIGN KEY (UserId)
-        REFERENCES SECURITY_SYSTEM.Users(Id)
+        REFERENCES Autenticacion.Users(Id)
 );
 GO
 
 CREATE INDEX IX_LoginAudit_Username_LoggedAt
-    ON SECURITY_SYSTEM.LoginAudit (Username, LoggedAt);
+    ON Autenticacion.LoginAudit (Username, LoggedAt);
 GO
 
 ------------------------------------------------------------
--- 16. Table: CryptoKeys
---      (Management of RSA / crypto keys, no passphrase stored)
---      EncryptedPrivateKey is decrypted by the app using a passphrase
---      taken from environment variables / vault (not from DB).
+-- 3.6 CryptoKeys
 ------------------------------------------------------------
-CREATE TABLE SECURITY_SYSTEM.CryptoKeys (
-    Id                 INT IDENTITY(1,1) CONSTRAINT PK_CryptoKeys PRIMARY KEY,
+IF OBJECT_ID('Autenticacion.CryptoKeys', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.CryptoKeys;
+GO
 
-    Name               NVARCHAR(100) NOT NULL,  -- e.g. 'Auth.JwtMain', 'Auth.Refresh'
-    KeyType            TINYINT       NOT NULL,  -- 1=RSA signing, 2=RSA encryption, 3=AES, etc.
-    Version            INT           NOT NULL DEFAULT 1,
+CREATE TABLE Autenticacion.CryptoKeys (
+    Id                  INT IDENTITY(1,1) CONSTRAINT PK_CryptoKeys PRIMARY KEY,
 
-    ApplicationId      INT           NULL,      -- optional: key associated to an application
+    Name                NVARCHAR(100) NOT NULL,  -- e.g. 'Auth.JwtMain', 'Auth.Refresh'
+    KeyType             TINYINT       NOT NULL,  -- 1=RSA signing, 2=RSA encryption, 3=AES, etc.
+    Version             INT           NOT NULL DEFAULT 1,
 
-    PublicKeyPem       NVARCHAR(MAX) NOT NULL,  -- -----BEGIN PUBLIC KEY-----
-    EncryptedPrivateKey VARBINARY(MAX) NOT NULL, -- private key encrypted
+    ApplicationId       INT           NULL,      -- optional: key associated to an application
 
-    IsActive           BIT           NOT NULL DEFAULT 1,
-    StartDate          DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    EndDate            DATETIME2     NULL,
+    PublicKeyPem        NVARCHAR(MAX)   NOT NULL,  -- -----BEGIN PUBLIC KEY-----
+    EncryptedPrivateKey VARBINARY(MAX)  NOT NULL,  -- private key encrypted
 
-    Thumbprint         NVARCHAR(128) NULL,      -- key fingerprint / hash
+    IsActive            BIT           NOT NULL DEFAULT 1,
+    StartDate           DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
+    EndDate             DATETIME2     NULL,
 
-    RecordStatus       INT           NOT NULL DEFAULT 1,
-    CreatedAt          DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    CreatedBy          NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
+    Thumbprint          NVARCHAR(128) NULL,      -- key fingerprint / hash
+
+    RecordStatus        INT           NOT NULL DEFAULT 1,
+    CreatedAt           DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
+    CreatedBy           NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_CryptoKeys_Applications FOREIGN KEY (ApplicationId)
-        REFERENCES SECURITY_SYSTEM.Applications(Id),
+        REFERENCES Autorizacion.Applications(Id),
 
     CONSTRAINT UQ_CryptoKeys_Name_Version UNIQUE (Name, Version)
 );
-GO
-
-
-ALTER TABLE Autorizacion.RoleUsers
-ADD IsInspector BIT NOT NULL DEFAULT(0);
-
-
-ALTER TABLE AUTORIZACION.RoleEndpoints
-ADD 
-    ServiceType   INT             NULL,
-    Endpoint      NVARCHAR(500)   NULL,
-    PageName      NVARCHAR(350)   NULL;
 GO

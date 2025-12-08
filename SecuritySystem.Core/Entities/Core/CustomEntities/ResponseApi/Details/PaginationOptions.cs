@@ -2,7 +2,7 @@
 {
     public class PaginationOptions
     {
-        public int InicialTamanoDePagina { get; set; }
-        public int InicialNumeroDePagina { get; set; }
+        public int InitialPageSize { get; set; }
+        public int InitialPageNumber { get; set; }
     }
 }

@@ -101,7 +101,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 var application = _unitOfWork.ApplicationRepository.Insert(new Applications
                 {
                     Code = applicationQueryFilter.Code,
-                    Name = applicationQueryFilter.Description,
+                    Description = applicationQueryFilter.Description,
                     Url = applicationQueryFilter.Url,
                     Icon = applicationQueryFilter.Icon,
                     CreatedBy = "SECURITY_SYSTEM"
@@ -179,7 +179,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         Id = Convert.ToInt32(applicationQueryFilter.Id),
                         Code = applicationQueryFilter.Code,
-                        Name = applicationQueryFilter.Description,
+                        Description = applicationQueryFilter.Description,
                         Url = applicationQueryFilter.Url,
                         Icon = applicationQueryFilter.Icon,
                         CreatedBy = string.IsNullOrWhiteSpace(applicationQueryFilter.CreatedBy)
@@ -188,7 +188,7 @@ namespace SecuritySystem.Application.Services.Authorization
                         CreatedAt = DateTime.UtcNow
                     },
                     a => a.Code,
-                    b => b.Name,
+                    b => b.Description,
                     c => c.Url,
                     d => d.Icon,
                     e => e.CreatedAt,
@@ -302,7 +302,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         Id = application.Id.ToString(),
                         Code = application.Code,
-                        Description = application.Name,
+                        Description = application.Description,
                         Url = application.Url,
                         Icon = application.Icon,
                         RecordStatus = application.RecordStatus,
@@ -342,12 +342,12 @@ namespace SecuritySystem.Application.Services.Authorization
             {
                 getApplicationsQueryFilter.PageNumber =
                     getApplicationsQueryFilter.PageNumber == 0
-                        ? _paginationOptions.InicialNumeroDePagina
+                        ? _paginationOptions.InitialPageNumber
                         : getApplicationsQueryFilter.PageNumber;
 
                 getApplicationsQueryFilter.PageSize =
                     getApplicationsQueryFilter.PageSize == 0
-                        ? _paginationOptions.InicialTamanoDePagina
+                        ? _paginationOptions.InitialPageSize
                         : getApplicationsQueryFilter.PageSize;
 
                 var applications = await _authorizationRepository.GetApplications();
@@ -372,8 +372,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 Pagination paginationData = null;
                 IEnumerable<object> dtoListResponse = null;
 
-                var paginatedList = applications.Count() > getApplicationsQueryFilter.PageSize
-                    ? ListaPaginada<ApplicationQueryFilter>.Paginar(
+                var paginatedList = applications.Count() > getApplicationsQueryFilter.PageSize? PaginatedList<ApplicationQueryFilter>.Paginate(
                         applications,
                         getApplicationsQueryFilter.PageNumber,
                         getApplicationsQueryFilter.PageSize,
@@ -397,8 +396,8 @@ namespace SecuritySystem.Application.Services.Authorization
 
                         tableCells.Add(new ColumnCellFormat
                         {
-                            NombreColumna = "No.",
-                            ContenidoCelda = new[]
+                            ColumnName = "No.",
+                            CellContent = new[]
                             {
                                 new RowModel
                                 {
@@ -410,8 +409,8 @@ namespace SecuritySystem.Application.Services.Authorization
 
                         tableCells.Add(new ColumnCellFormat
                         {
-                            NombreColumna = "Code",
-                            ContenidoCelda = new[]
+                            ColumnName = "Code",
+                            CellContent = new[]
                             {
                                 new RowModel
                                 {
@@ -423,8 +422,8 @@ namespace SecuritySystem.Application.Services.Authorization
 
                         tableCells.Add(new ColumnCellFormat
                         {
-                            NombreColumna = "Name",
-                            ContenidoCelda = new[]
+                            ColumnName = "Name",
+                            CellContent = new[]
                             {
                                 new RowModel
                                 {
@@ -436,8 +435,8 @@ namespace SecuritySystem.Application.Services.Authorization
 
                         tableCells.Add(new ColumnCellFormat
                         {
-                            NombreColumna = "Url",
-                            ContenidoCelda = new[]
+                            ColumnName = "Url",
+                            CellContent = new[]
                             {
                                 new RowModel
                                 {
@@ -449,8 +448,8 @@ namespace SecuritySystem.Application.Services.Authorization
 
                         tableCells.Add(new ColumnCellFormat
                         {
-                            NombreColumna = "Icon",
-                            ContenidoCelda = new[]
+                            ColumnName = "Icon",
+                            CellContent = new[]
                             {
                                 new RowModel
                                 {
@@ -462,8 +461,8 @@ namespace SecuritySystem.Application.Services.Authorization
 
                         tableCells.Add(new ColumnCellFormat
                         {
-                            NombreColumna = "Actions",
-                            ContenidoCelda = new[]
+                            ColumnName = "Actions",
+                            CellContent = new[]
                             {
                                 new RowModel
                                 {
@@ -504,7 +503,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetPagination
                     {
-                        Paginacion = new ListaPaginada<object>(dtoListResponse, paginationData),
+                        Paginacion = new PaginatedList<object>(dtoListResponse, paginationData),
                         StatusCode = HttpStatusCode.OK
                     };
                 }

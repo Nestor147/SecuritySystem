@@ -21,12 +21,12 @@ namespace SecuritySystem.Infrastructure.Validators.Autorization
                         .WithMessage("The code must not exceed 25 characters.");
                 });
 
-            RuleFor(app => app.Name)
+            RuleFor(app => app.Description)
                 .NotEmpty()
                 .WithMessage("The name is required.")
                 .DependentRules(() =>
                 {
-                    RuleFor(app => app.Name)
+                    RuleFor(app => app.Description)
                         .MaximumLength(250)
                         .WithMessage("The name must not exceed 250 characters.");
                 });

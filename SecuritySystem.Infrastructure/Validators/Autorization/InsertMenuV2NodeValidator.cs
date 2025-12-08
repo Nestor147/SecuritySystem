@@ -3,7 +3,7 @@ using SecuritySystem.Core.QueryFilters.Autorization;
 
 namespace SecuritySystem.Infrastructure.Validators.Security
 {
-    public class InsertMenuV2NodeValidator : AbstractValidator<MenuV2ItemQueryFilter>
+    public class InsertMenuV2NodeValidator : AbstractValidator<MenuContentQueryFilter>
     {
         public InsertMenuV2NodeValidator()
         {
