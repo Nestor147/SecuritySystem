@@ -53,8 +53,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     item.RoleId == subMenu.RoleId)
                 {
                     // Example: Level = "101020"
-                    var prefix = item.Level.Substring(0, item.Indentation * 2 - 2);
-                    if (prefix == subMenu.Level)
+                    var prefix = item.Level.ToString().Substring(0,  item.IndentLevel * 2 - 2);
+                    if (prefix == subMenu.Level.ToString())
                     {
                         subMenu.SubLinks.Add(item);
                         return menu;
@@ -111,8 +111,8 @@ namespace SecuritySystem.Application.Services.Authorization
             {
                 if (item.Level == subMenu.Level + 1)
                 {
-                    var prefix = item.Level.Substring(0, item.Indentation * 2 - 2);
-                    if (prefix == subMenu.Level)
+                    var prefix = item.Level.ToString().Substring(0, item.IndentLevel * 2 - 2);
+                    if (prefix == subMenu.Level.ToString())
                     {
                         subMenu.SubLinks.Add(item);
                         return menu;
@@ -148,16 +148,16 @@ namespace SecuritySystem.Application.Services.Authorization
             IEnumerable<RoleContentQueryFilter> fullMenu,
             string resourceId)
         {
-            var child = fullMenu.FirstOrDefault(a => a.ResourceId == resourceId);
+            var child = fullMenu.FirstOrDefault(a => a.ResourceId.ToString() == resourceId);
             var parentNodes = new List<RoleContentQueryFilter>();
 
-            while (child != null && child.Indentation > 0)
+            while (child != null && child.IndentLevel > 0)
             {
                 var possibleParents = fullMenu
                     .Where(a =>
-                        a.Indentation == (child.Indentation - 1) &&
-                        child.Level.StartsWith(a.Level))
-                    .OrderByDescending(a => a.Level.Length)
+                        a.IndentLevel == (child.IndentLevel - 1) &&
+                        child.Level.ToString().StartsWith(a.Level.ToString()))
+                    .OrderByDescending(a => a.Level.ToString().Length)
                     .ToList();
 
                 if (!possibleParents.Any())
@@ -185,7 +185,7 @@ namespace SecuritySystem.Application.Services.Authorization
             IEnumerable<RoleContentQueryFilter> fullMenu,
             string resourceId)
         {
-            var parent = fullMenu.FirstOrDefault(a => a.ResourceId == resourceId);
+            var parent = fullMenu.FirstOrDefault(a => a.ResourceId.ToString() == resourceId);
             if (parent == null)
                 return new List<RoleContentQueryFilter>();
 
@@ -193,16 +193,16 @@ namespace SecuritySystem.Application.Services.Authorization
 
             var directChildren = fullMenu
                 .Where(m =>
-                    m.Level.Length == parent.Level.Length + 2 &&
-                    m.Level.StartsWith(parent.Level) &&
-                    m.Indentation == parent.Indentation + 1)
+                    m.Level.ToString().Length == parent.Level.ToString().Length + 2 &&
+                    m.Level.ToString().StartsWith(parent.Level.ToString()) &&
+                    m.IndentLevel == parent.IndentLevel + 1)
                 .ToList();
 
             var allChildren = new List<RoleContentQueryFilter>(directChildren);
 
             foreach (var child in directChildren)
             {
-                var childDescendants = GetAllPageNodesByParent(fullMenu, child.ResourceId);
+                var childDescendants = GetAllPageNodesByParent(fullMenu, child.ResourceId.ToString());
                 allChildren.AddRange(childDescendants);
             }
 
@@ -213,7 +213,7 @@ namespace SecuritySystem.Application.Services.Authorization
             IEnumerable<RoleContentQueryFilter> fullMenu,
             string resourceId)
         {
-            var parent = fullMenu.FirstOrDefault(a => a.ResourceId == resourceId);
+            var parent = fullMenu.FirstOrDefault(a => a.ResourceId.ToString() == resourceId);
             if (parent == null)
                 return new List<RoleContentQueryFilter>();
 
@@ -221,9 +221,9 @@ namespace SecuritySystem.Application.Services.Authorization
 
             var directChildren = fullMenu
                 .Where(m =>
-                    m.Level.Length == parent.Level.Length + 2 &&
-                    m.Level.StartsWith(parent.Level) &&
-                    m.Indentation == parent.Indentation + 1)
+                    m.Level.ToString().Length == parent.Level.ToString().Length + 2 &&
+                    m.Level.ToString().StartsWith(parent.Level.ToString()) &&
+                    m.IndentLevel == parent.IndentLevel + 1)
                 .ToList();
 
             return directChildren;
@@ -346,7 +346,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 }
                 else
                 {
-                    var newItems = flatMenu.Where(a => !existingMenu.Any(b => b.ResourceId == a.ResourceId));
+                    var newItems = flatMenu.Where(a => !existingMenu.Any(b => b.ResourceId.ToString() == a.ResourceId));
                     if (newItems.Any())
                     {
                         foreach (var element in newItems)
@@ -363,13 +363,13 @@ namespace SecuritySystem.Application.Services.Authorization
                     }
 
                     var reactivable = existingMenu
-                        .Where(a => a.RecordStatus == 0 && flatMenu.Any(b => b.ResourceId == a.ResourceId));
+                        .Where(a => a.RecordStatus == 0 && flatMenu.Any(b => b.ResourceId == a.ResourceId.ToString()));
 
                     var removed = existingMenu
-                        .Where(a => a.RecordStatus == 1 && !flatMenu.Any(b => b.ResourceId == a.ResourceId));
+                        .Where(a => a.RecordStatus == 1 && !flatMenu.Any(b => b.ResourceId == a.ResourceId.ToString()));
 
                     var existingActive = existingMenu
-                        .Where(a => a.RecordStatus == 1 && flatMenu.Any(b => b.ResourceId == a.ResourceId));
+                        .Where(a => a.RecordStatus == 1 && flatMenu.Any(b => b.ResourceId == a.ResourceId.ToString()));
 
                     if (existingActive.Any())
                     {
@@ -380,11 +380,11 @@ namespace SecuritySystem.Application.Services.Authorization
                                 Id = Convert.ToInt32(element.Id),
                                 ResourceId =Convert.ToInt32(element.ResourceId),
                                 Level = Convert.ToInt32(
-                                    flatMenu.Where(a => a.ResourceId == element.ResourceId)
+                                    flatMenu.Where(a => a.ResourceId == element.ResourceId.ToString())
                                             .Select(a => a.Level)
                                             .FirstOrDefault()
                                 ),
-                                IndentLevel = flatMenu.Where(a => a.ResourceId == element.ResourceId)
+                                IndentLevel = flatMenu.Where(a => a.ResourceId == element.ResourceId.ToString())
                                                       .Select(a => a.Indentation)
                                                       .FirstOrDefault(),
                                 CreatedAt = DateTime.Now,
@@ -406,7 +406,7 @@ namespace SecuritySystem.Application.Services.Authorization
                                 Id = Convert.ToInt32(element.Id),
                                 ResourceId =Convert.ToInt32(element.ResourceId),
                                 Level =Convert.ToInt32(element.Level),
-                                IndentLevel =Convert.ToInt32(element.Indentation),
+                                IndentLevel =Convert.ToInt32(element.IndentLevel),
                                 CreatedAt = DateTime.Now,
                                 RecordStatus = 0,
                                 CreatedBy = "AUTHORIZATION"
@@ -439,11 +439,11 @@ namespace SecuritySystem.Application.Services.Authorization
                                 Id =Convert.ToInt32(element.Id),
                                 ResourceId =Convert.ToInt32(element.ResourceId),
                                 Level = Convert.ToInt32(
-                                    flatMenu.Where(a => a.ResourceId == element.ResourceId)
+                                    flatMenu.Where(a => a.ResourceId == element.ResourceId.ToString())
                                             .Select(a => a.Level)
                                             .FirstOrDefault()
                                 ),
-                                IndentLevel = flatMenu.Where(a => a.ResourceId == element.ResourceId)
+                                IndentLevel = flatMenu.Where(a => a.ResourceId == element.ResourceId.ToString())
                                                       .Select(a => a.Indentation)
                                                       .FirstOrDefault(),
                                 CreatedAt = DateTime.Now,
@@ -501,7 +501,7 @@ namespace SecuritySystem.Application.Services.Authorization
             try
             {
                 var menu = await _authorizationRepository.GetMenuByApplication(applicationId, onlyActive: 1);
-                menu = menu.Where(x => x.Indentation > 0);
+                menu = menu.Where(x => x.IndentLevel > 0);
 
                 if (menu.Any())
                 {
@@ -513,7 +513,7 @@ namespace SecuritySystem.Application.Services.Authorization
                         item.Id = item.Id;
                         item.ResourceId = item.ResourceId;
 
-                        if (item.Indentation == 1)
+                        if (item.IndentLevel == 1)
                         {
                             formattedMenu.Add(item);
                         }
@@ -593,7 +593,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 foreach (var item in roleMenu)
                 {
-                    var menuItem = fullMenu.FirstOrDefault(b => b.ResourceId == item.ResourceId);
+                    var menuItem = fullMenu.FirstOrDefault(b => b.ResourceId.ToString() == item.ResourceId);
                     if (menuItem != null)
                     {
                         preUserMenu.Add(menuItem);
@@ -621,7 +621,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     element.ResourceId = element.ResourceId;
                     element.RoleId = null;
 
-                    if (element.Indentation == 1)
+                    if (element.IndentLevel == 1)
                     {
                         finalMenu.Add(element);
                     }
@@ -862,7 +862,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 foreach (var rr in roleResources)
                 {
-                    var menuItem = fullMenu.FirstOrDefault(b => b.ResourceId == rr.ResourceId);
+                    var menuItem = fullMenu.FirstOrDefault(b => b.ResourceId.ToString() == rr.ResourceId);
                     if (menuItem == null) continue;
 
                     preUserMenu.Add(menuItem);
@@ -889,7 +889,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     element.ResourceId = element.ResourceId;
                     element.RoleId = null;
 
-                    if (element.Indentation == 1)
+                    if (element.IndentLevel == 1)
                     {
                         finalMenu.Add(element);
                     }

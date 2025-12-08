@@ -1,4 +1,5 @@
-﻿using SecuritySystem.Core.GetQueryFilter.Autorization;
+﻿using SecuritySystem.Core.Entities;
+using SecuritySystem.Core.GetQueryFilter.Autorization;
 using SecuritySystem.Core.Interfaces;
 using SecuritySystem.Core.Interfaces.Core.SQLServer.ADO;
 using SecuritySystem.Core.QueryFilters.Autorization;
@@ -35,7 +36,7 @@ namespace SecuritySystem.Infrastructure.Repositories
             var rows = await _ado.ExecuteEntitiesAsync(
                 "AUTORIZACION.GetApplicationsByUserId",
                 CommandType.StoredProcedure,
-                new { id_usuario = Convert.ToInt32(userId) }
+                new { UserId = Convert.ToInt32(userId) }
             );
 
             return rows.Select(r => r.To<ApplicationsByUserRequest>());
@@ -56,9 +57,9 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    IdAplicacion = idAplicacion,
-                    Sigla = applicationQueryFilter.Code,
-                    Descripcion = applicationQueryFilter.Description
+                    ApplicationId = idAplicacion,
+                    Code = applicationQueryFilter.Code,
+                    Description = applicationQueryFilter.Description
                 }
             );
 
@@ -82,12 +83,12 @@ namespace SecuritySystem.Infrastructure.Repositories
 
         public async Task<IEnumerable<ResourceQueryFilter>> GetDuplicateResources(ResourceQueryFilter resourceQueryFilter)
         {
-            int? idObjeto = null;
+            int? resourceId = null;
             if (!string.IsNullOrWhiteSpace(resourceQueryFilter.Id) &&
                 int.TryParse(resourceQueryFilter.Id, out var val) &&
                 val > 0)
             {
-                idObjeto = val;
+                resourceId = val;
             }
 
             string? page = string.IsNullOrWhiteSpace(resourceQueryFilter.Page)
@@ -103,9 +104,9 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    Pagina = page,
-                    Descripcion = description,
-                    IdObjeto = idObjeto
+                    Page = page,
+                    Name = description,
+                    ResourceId = resourceId
                 }
             );
 
@@ -123,7 +124,7 @@ namespace SecuritySystem.Infrastructure.Repositories
                 new
                 {
                     // El SP espera un NVARCHAR(MAX) con CSV: '1,2,3'
-                    IdObjeto = resourceIdsCsv
+                    ResourceIds = resourceIdsCsv
                 }
             );
 
@@ -139,7 +140,7 @@ namespace SecuritySystem.Infrastructure.Repositories
             var rows = await _ado.ExecuteEntitiesAsync(
                 "AUTORIZACION.GetRoles",
                 CommandType.StoredProcedure,
-                new { IdAplicacion = Convert.ToInt32(queryFilterRoles.ApplicationId) }
+                new { ApplicationId = Convert.ToInt32(queryFilterRoles.ApplicationId) }
             );
 
             return rows.Select(r => r.To<RoleQueryFilter>());
@@ -151,7 +152,7 @@ namespace SecuritySystem.Infrastructure.Repositories
             var rows = await _ado.ExecuteEntitiesAsync(
                 "AUTORIZACION.GetRoles",
                 CommandType.StoredProcedure,
-                new { IdAplicacion = Convert.ToInt32(applicationId) }
+                new { ApplicationId = Convert.ToInt32(applicationId) }
             );
 
             return rows.Select(r => r.To<RoleQueryFilter>());
@@ -159,19 +160,19 @@ namespace SecuritySystem.Infrastructure.Repositories
 
         public async Task<IEnumerable<RoleQueryFilter>> GetDuplicateRoles(RoleQueryFilter roleQueryFilter)
         {
-            int? idRol = null;
+            int? roleId = null;
             if (!string.IsNullOrWhiteSpace(roleQueryFilter.Id) &&
                 int.TryParse(roleQueryFilter.Id, out var val) &&
                 val > 0)
             {
-                idRol = val;
+                roleId = val;
             }
 
-            string? nombre = string.IsNullOrWhiteSpace(roleQueryFilter.Name)
+            string? name = string.IsNullOrWhiteSpace(roleQueryFilter.Name)
                 ? null
                 : roleQueryFilter.Name.Trim();
 
-            string? descripcion = string.IsNullOrWhiteSpace(roleQueryFilter.Description)
+            string? description = string.IsNullOrWhiteSpace(roleQueryFilter.Description)
                 ? null
                 : roleQueryFilter.Description.Trim();
 
@@ -180,10 +181,10 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    IdAplicacion = roleQueryFilter.ApplicationId,
-                    Nombre = nombre,
-                    Descripcion = descripcion,
-                    IdRol = idRol
+                    ApplicationId = roleQueryFilter.ApplicationId,
+                    Name = name,
+                    Description = description,
+                    RoleId = roleId
                 }
             );
 
@@ -195,7 +196,7 @@ namespace SecuritySystem.Infrastructure.Repositories
             var rows = await _ado.ExecuteEntitiesAsync(
                 "AUTORIZACION.GetRolesByMultipleUsers",
                 CommandType.StoredProcedure,
-                new { IdUsuario = userId }
+                new { UserIds = userId }
             );
 
             return rows.Select(r => r.To<UserRoleQueryFilter>());
@@ -213,8 +214,8 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    IdAplicacion = Convert.ToInt32(applicationId),
-                    SoloActivos = onlyActive // igual que antes, solo activos
+                    ApplicationId = Convert.ToInt32(applicationId),
+                    OnlyActive = onlyActive // igual que antes, solo activos
                 }
             );
 
@@ -229,7 +230,7 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    IdRol = Convert.ToInt32(getMenuQueryFilter.RoleId)
+                    RoleId = Convert.ToInt32(getMenuQueryFilter.RoleId)
                 }
             );
 
@@ -244,7 +245,7 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    IdAplicacion = Convert.ToInt32(applicationId)
+                    ApplicationId = Convert.ToInt32(applicationId)
                 }
             );
 
@@ -254,20 +255,20 @@ namespace SecuritySystem.Infrastructure.Repositories
         public async Task<IEnumerable<RoleResourceMenuQueryFilter>> GetRoleResourcesForUser(GetMenuQueryFilter getMenuQueryFilter)
         {
             // Antes: Autorizacion.ObtenerMenuPorRolUsuario
-            int? idUsuarioSistema = null;
+            int? userId = null;
             if (!string.IsNullOrWhiteSpace(getMenuQueryFilter.UserId) &&
                 int.TryParse(getMenuQueryFilter.UserId, out var valUsuario) &&
                 valUsuario > 0)
             {
-                idUsuarioSistema = valUsuario;
+                userId = valUsuario;
             }
 
-            int? idRol = null;
+            int? roleIds = null;
             if (!string.IsNullOrWhiteSpace(getMenuQueryFilter.RoleId) &&
                 int.TryParse(getMenuQueryFilter.RoleId, out var valRol) &&
                 valRol > 0)
             {
-                idRol = valRol;
+                roleIds = valRol;
             }
 
             var rows = await _ado.ExecuteEntitiesAsync(
@@ -275,9 +276,9 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    DocumentoIdentidad = getMenuQueryFilter.DocumentNumber,
-                    IdUsuarioSistema = idUsuarioSistema,
-                    IdRol = idRol
+                    Username = getMenuQueryFilter.DocumentNumber, //revisar si esta bien 
+                    UserId = userId,
+                    RoleIds = roleIds
                 }
             );
 
@@ -298,12 +299,12 @@ namespace SecuritySystem.Infrastructure.Repositories
                 idUsuario = valUsuario;
             }
 
-            int? idRol = null;
+            int? roleId = null;
             if (!string.IsNullOrWhiteSpace(queryFilter.RoleId) &&
                 int.TryParse(queryFilter.RoleId, out var valRol) &&
                 valRol > 0)
             {
-                idRol = valRol;
+                roleId = valRol;
             }
 
             string? docId = string.IsNullOrWhiteSpace(queryFilter.DocumentNumber)
@@ -315,9 +316,9 @@ namespace SecuritySystem.Infrastructure.Repositories
                 CommandType.StoredProcedure,
                 new
                 {
-                    IdUsuarioSistema = idUsuario,
-                    IdRol = idRol,
-                    DocumentoIdentidad = docId
+                    //IdUsuarioSistema = idUsuario,
+                    RoleId = roleId,
+                    //DocumentoIdentidad = docId
                 }
             );
 
@@ -329,7 +330,7 @@ namespace SecuritySystem.Infrastructure.Repositories
             var rows = await _ado.ExecuteEntitiesAsync(
                 "AUTORIZACION.GetUsersByRoleId",
                 CommandType.StoredProcedure,
-                new { IdRol = Convert.ToInt32(roleId) }
+                new { RoleId = Convert.ToInt32(roleId) }
             );
 
             return rows.Select(r => r.To<UserDataQueryFilter>());
