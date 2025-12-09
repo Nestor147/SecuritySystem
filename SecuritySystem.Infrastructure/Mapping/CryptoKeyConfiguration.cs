@@ -10,6 +10,7 @@ namespace SecuritySystem.Infrastructure.Mapping
         {
             builder.ToTable("CryptoKeys", "AUTORIZACION");
 
+            // Primary Key
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Id)
@@ -18,7 +19,7 @@ namespace SecuritySystem.Infrastructure.Mapping
 
             builder.Property(e => e.Name)
                    .IsRequired()
-                   .HasMaxLength(100)
+                   .HasMaxLength(150)
                    .HasColumnName("Name");
 
             builder.Property(e => e.KeyType)
@@ -27,7 +28,6 @@ namespace SecuritySystem.Infrastructure.Mapping
 
             builder.Property(e => e.Version)
                    .IsRequired()
-                   .HasDefaultValue(1)
                    .HasColumnName("Version");
 
             builder.Property(e => e.ApplicationId)
@@ -49,6 +49,7 @@ namespace SecuritySystem.Infrastructure.Mapping
                    .HasColumnName("IsActive");
 
             builder.Property(e => e.StartDate)
+                   .IsRequired()
                    .HasColumnType("datetime2")
                    .HasDefaultValueSql("SYSUTCDATETIME()")
                    .HasColumnName("StartDate");
@@ -58,7 +59,7 @@ namespace SecuritySystem.Infrastructure.Mapping
                    .HasColumnName("EndDate");
 
             builder.Property(e => e.Thumbprint)
-                   .HasMaxLength(128)
+                   .HasMaxLength(200)
                    .HasColumnName("Thumbprint");
 
             builder.Property(e => e.RecordStatus)
@@ -77,14 +78,11 @@ namespace SecuritySystem.Infrastructure.Mapping
                    .HasDefaultValueSql("SYSTEM_USER")
                    .HasColumnName("CreatedBy");
 
-            //builder.HasIndex(e => new { e.Name, e.Version })
-            //       .IsUnique()
-            //       .HasDatabaseName("UQ_CryptoKeys_Name_Version");
-
-            //builder.HasOne(e => e.Application)
-            //       .WithMany(a => a.CryptoKeys)
+            //// Relationship with Applications (optional FK)
+            //builder.HasOne<Applications>()
+            //       .WithMany()
             //       .HasForeignKey(e => e.ApplicationId)
-            //       .OnDelete(DeleteBehavior.SetNull);
+            //       .HasConstraintName("FK_CryptoKeys_Applications");
         }
     }
 }

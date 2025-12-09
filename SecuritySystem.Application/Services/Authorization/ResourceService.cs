@@ -793,9 +793,9 @@ namespace SecuritySystem.Application.Services.Authorization
                     comboList.Add(
                         new RowModelCmb
                         {
-                            Valor = resource.Id.ToString(),
-                            Descripcion = resource.Description,
-                            EstaSeleccionado = (index == 0)
+                            Value = resource.Id.ToString(),
+                            Description = resource.Description,
+                            IsSelected = (index == 0)
                         });
 
                     index++;

@@ -253,18 +253,21 @@ IF OBJECT_ID('Autenticacion.RefreshTokens', 'U') IS NOT NULL
 GO
 
 CREATE TABLE Autenticacion.RefreshTokens (
-    Id               UNIQUEIDENTIFIER CONSTRAINT PK_RefreshTokens PRIMARY KEY,
-    UserId           INT           NOT NULL,
-    TokenHash        NVARCHAR(500) NOT NULL,   -- hashed or encrypted refresh token
-    ExpiresAt        DATETIME2     NOT NULL,
-    Used             BIT           NOT NULL DEFAULT 0,
-    Revoked          BIT           NOT NULL DEFAULT 0,
-    TokenCreatedAt   DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    IPAddress        NVARCHAR(100) NULL,
-    UserAgent        NVARCHAR(500) NULL,
-    RecordStatus     INT           NOT NULL DEFAULT 1,
-    CreatedAt        DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
-    CreatedBy        NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER,
+    Id             UNIQUEIDENTIFIER CONSTRAINT PK_RefreshTokens PRIMARY KEY,
+    UserId         INT            NOT NULL,
+    ApplicationId  INT            NOT NULL,   -- ✅ ya queda por aplicación
+
+    TokenHash      NVARCHAR(500)  NOT NULL,
+    ExpiresAt      DATETIME2      NOT NULL,
+    Used           BIT            NOT NULL DEFAULT 0,
+    Revoked        BIT            NOT NULL DEFAULT 0,
+    TokenCreatedAt DATETIME2      NOT NULL DEFAULT SYSUTCDATETIME(),
+    IPAddress      NVARCHAR(100)  NULL,
+    UserAgent      NVARCHAR(500)  NULL,
+
+    RecordStatus   INT            NOT NULL DEFAULT 1,
+    CreatedAt      DATETIME2      NOT NULL DEFAULT SYSUTCDATETIME(),
+    CreatedBy      NVARCHAR(100)  NOT NULL DEFAULT SYSTEM_USER,
 
     CONSTRAINT FK_RefreshTokens_Users FOREIGN KEY (UserId)
         REFERENCES Autenticacion.Users(Id)
@@ -274,6 +277,11 @@ GO
 CREATE INDEX IX_RefreshTokens_UserId
     ON Autenticacion.RefreshTokens (UserId);
 GO
+
+CREATE INDEX IX_RefreshTokens_UserId_ApplicationId
+    ON Autenticacion.RefreshTokens (UserId, ApplicationId);
+GO
+
 
 ------------------------------------------------------------
 -- 3.2 LoginAttempts
@@ -415,5 +423,25 @@ CREATE TABLE Autenticacion.CryptoKeys (
         REFERENCES Autorizacion.Applications(Id),
 
     CONSTRAINT UQ_CryptoKeys_Name_Version UNIQUE (Name, Version)
+);
+GO
+
+
+IF OBJECT_ID('Autenticacion.ApplicationTokenPolicies', 'U') IS NOT NULL
+    DROP TABLE Autenticacion.ApplicationTokenPolicies;
+GO
+
+CREATE TABLE Autenticacion.ApplicationTokenPolicies (
+    ApplicationId       INT           NOT NULL CONSTRAINT PK_ApplicationTokenPolicies PRIMARY KEY
+        REFERENCES Autorizacion.Applications(Id),
+
+    AccessTokenMinutes  INT           NOT NULL DEFAULT 10,
+    RefreshTokenDays    INT           NOT NULL DEFAULT 15,
+    RequireMfa          BIT           NOT NULL DEFAULT 0,  -- future use
+    MaxSessions         INT           NULL,                 -- future use
+
+    RecordStatus        INT           NOT NULL DEFAULT 1,
+    CreatedAt           DATETIME2     NOT NULL DEFAULT SYSUTCDATETIME(),
+    CreatedBy           NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER
 );
 GO

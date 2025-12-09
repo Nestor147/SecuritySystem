@@ -10,6 +10,7 @@ namespace SecuritySystem.Infrastructure.Context
 
         public virtual DbSet<Applications> Applications { get; set; }
         public virtual DbSet<CryptoKey> CryptoKeys { get; set; }
+        public virtual DbSet<ApplicationTokenPolicy> ApplicationTokenPolicy { get; set; }
         public virtual DbSet<KnownDevice> KnownDevices { get; set; }
         public virtual DbSet<LoginAttempt> LoginAttempts { get; set; }
         public virtual DbSet<LoginAudit> LoginAudits { get; set; }
@@ -46,6 +47,7 @@ namespace SecuritySystem.Infrastructure.Context
             modelBuilder.ApplyConfiguration(new KnownDeviceConfiguration());
             modelBuilder.ApplyConfiguration(new LoginAuditConfiguration());
             modelBuilder.ApplyConfiguration(new CryptoKeyConfiguration());
+            modelBuilder.ApplyConfiguration(new ApplicationTokenPolicyConfiguration());
             //modelBuilder.ApplyConfiguration(new AplicacionConfiguration());
             //modelBuilder.ApplyConfiguration(new AuditoriaLoginConfiguration());
             //modelBuilder.ApplyConfiguration(new DispositivoConocidoConfiguration());

@@ -48,6 +48,7 @@ namespace SecuritySystem.Core.Interfaces.Core
 
         // Claves criptográficas (RSA/AES)
         public IGenericRepository<CryptoKey> CryptoKeyRepository { get; }
+        public IGenericRepository<ApplicationTokenPolicy> ApplicationTokenPolicyRepository { get; }
 
         IGenericRepository<T> Repository<T>() where T : class;
 

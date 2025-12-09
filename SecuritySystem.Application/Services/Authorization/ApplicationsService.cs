@@ -535,9 +535,9 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         _comboRowModelList.Add(new RowModelCmb
                         {
-                            Valor = app.Id.ToString(),
-                            Descripcion = app.Description,
-                            EstaSeleccionado = _comboIndex == 0
+                            Value = app.Id.ToString(),
+                            Description = app.Description,
+                            IsSelected = _comboIndex == 0
                         });
 
                         _comboIndex++;

@@ -6,6 +6,7 @@ namespace SecuritySystem.Core.Entities
     {
         public Guid Id { get; set; }
         public int UserId { get; set; }
+        public int ApplicationId { get; set; }
 
         public string TokenHash { get; set; }
         public DateTime ExpiresAt { get; set; }

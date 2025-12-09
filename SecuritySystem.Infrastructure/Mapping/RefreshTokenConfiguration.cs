@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SecuritySystem.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SecuritySystem.Infrastructure.Mapping
 {
@@ -13,7 +8,8 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
-            builder.ToTable("RefreshTokens", "AUTORIZACION");
+            // ✅ Esquema correcto según tu BD actual
+            builder.ToTable("RefreshTokens", "AUTENTICACION");
 
             builder.HasKey(e => e.Id);
 
@@ -24,6 +20,11 @@ namespace SecuritySystem.Infrastructure.Mapping
             builder.Property(e => e.UserId)
                    .IsRequired()
                    .HasColumnName("UserId");
+
+            // ✅ NUEVA COLUMNA: ApplicationId
+            builder.Property(e => e.ApplicationId)
+                   .IsRequired()
+                   .HasColumnName("ApplicationId");
 
             builder.Property(e => e.TokenHash)
                    .IsRequired()
@@ -74,14 +75,21 @@ namespace SecuritySystem.Infrastructure.Mapping
                    .HasDefaultValueSql("SYSTEM_USER")
                    .HasColumnName("CreatedBy");
 
-            //builder.HasIndex(e => e.UserId)
-            //       .HasDatabaseName("IX_RefreshTokens_UserId");
+            // ✅ Índices alineados con la BD
+            builder.HasIndex(e => e.UserId)
+                   .HasDatabaseName("IX_RefreshTokens_UserId");
 
-            //builder.HasOne(e => e.User)
-            //       .WithMany(u => u.RefreshTokens)
-            //       .HasForeignKey(e => e.UserId)
-            //       .OnDelete(DeleteBehavior.Cascade);
+            builder.HasIndex(e => new { e.UserId, e.ApplicationId })
+                   .HasDatabaseName("IX_RefreshTokens_UserId_ApplicationId");
+
+            // ✅ Relación con Users (si tienes la navegación)
+            // Descomenta SOLO si tu entidad User tiene colección RefreshTokens
+            /*
+            builder.HasOne(e => e.User)
+                   .WithMany(u => u.RefreshTokens)
+                   .HasForeignKey(e => e.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            */
         }
     }
-
 }

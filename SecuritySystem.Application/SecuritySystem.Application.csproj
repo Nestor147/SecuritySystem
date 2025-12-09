@@ -10,8 +10,4 @@
     <ProjectReference Include="..\SecuritySystem.Core\SecuritySystem.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
-
 </Project>

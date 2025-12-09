@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SecuritySystem.Application.Interfaces.Authentication;
 using SecuritySystem.Application.Interfaces.Authorization;
+using SecuritySystem.Application.Services.Authentication;
 using SecuritySystem.Application.Services.Authorization;
 using SecuritySystem.Core.Interfaces;
 using SecuritySystem.Core.Interfaces.Core;
@@ -40,6 +42,7 @@ namespace SecuritySystem.Infrastructure.DependencyInjection
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
             //services.AddScoped<IObjetoService, ObjetoService>();
             //services.AddScoped<IRolService, RolService>();
 

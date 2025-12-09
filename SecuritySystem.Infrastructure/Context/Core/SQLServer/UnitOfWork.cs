@@ -13,6 +13,7 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
         // Repositories fields
         private readonly IGenericRepository<Applications> _applicationRepository;
         private readonly IGenericRepository<CryptoKey> _cryptoKeyRepository;
+        private readonly IGenericRepository<ApplicationTokenPolicy> _applicationTokenPolicyyRepository;
         private readonly IGenericRepository<KnownDevice> _knownDeviceRepository;
         private readonly IGenericRepository<LoginAttempt> _loginAttemptRepository;
         private readonly IGenericRepository<LoginAudit> _loginAuditRepository;
@@ -65,6 +66,8 @@ namespace SecuritySystem.Infrastructure.Context.Core.SQLServer
 
         public IGenericRepository<CryptoKey> CryptoKeyRepository =>
             _cryptoKeyRepository ?? new GenericRepository<CryptoKey>(_context);
+        public IGenericRepository<ApplicationTokenPolicy> ApplicationTokenPolicyRepository =>
+    _applicationTokenPolicyyRepository ?? new GenericRepository<ApplicationTokenPolicy>(_context);
 
         public IGenericRepository<KnownDevice> KnownDeviceRepository =>
             _knownDeviceRepository ?? new GenericRepository<KnownDevice>(_context);

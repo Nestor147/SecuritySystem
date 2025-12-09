@@ -758,9 +758,9 @@ namespace SecuritySystem.Application.Services.Authorization
                         cmbList.Add(new RowModelCmb
                         {
                             //Valor = _encryptionHelper.EncryptParameterId(role.Id.ToString()),
-                            Valor = role.Id.ToString(),
-                            Descripcion = role.Name,
-                            EstaSeleccionado = idx == 0
+                            Value = role.Id.ToString(),
+                            Description = role.Name,
+                            IsSelected = idx == 0
                         });
                         idx++;
                     }
