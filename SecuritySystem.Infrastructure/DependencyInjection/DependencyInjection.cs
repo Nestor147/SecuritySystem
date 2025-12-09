@@ -43,6 +43,7 @@ namespace SecuritySystem.Infrastructure.DependencyInjection
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IAuthService, AuthService>();
             //services.AddScoped<IObjetoService, ObjetoService>();
             //services.AddScoped<IRolService, RolService>();
 

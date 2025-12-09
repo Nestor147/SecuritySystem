@@ -6,16 +6,12 @@ using SecuritySystem.Application.Interfaces.Authentication;
 using SecuritySystem.Application.Interfaces.Authentication.Dtos;
 using SecuritySystem.Core.Entities;
 using SecuritySystem.Core.Interfaces.Core;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SecuritySystem.Application.Services.Authentication
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly IAppSigningKeyProvider _appSigningKeyProvider;
         private readonly IAppTokenPolicyProvider _appTokenPolicyProvider;
@@ -56,10 +52,10 @@ namespace SecuritySystem.Application.Services.Authentication
                 .FirstOrDefaultAsync(a => a.Code == req.ApplicationCode && a.RecordStatus == 1, ct)
                 ?? throw new AppNotFoundException($"Application {req.ApplicationCode} does not exist or is inactive.");
 
-            // 3) Ensure user is allowed in this application (user-app relation)
+            // 3) Ensure user is allowed in this application
             await EnsureUserHasAccessToAppAsync(user.Id, app.Id, ct);
 
-            // 4) Get signing key & token policy for this app
+            // 4) Get signing key & token policy
             var keyMaterial = await _appSigningKeyProvider.GetActiveSigningKeyAsync(app.Id, ct);
             var policy = await _appTokenPolicyProvider.GetPolicyAsync(app.Id, ct);
 
@@ -70,28 +66,17 @@ namespace SecuritySystem.Application.Services.Authentication
             var audience = $"Authentication.Clients/{app.Code}";
             var jti = Guid.NewGuid().ToString("N");
 
-            // 5) Build claims
-            var claims = await BuildAccessClaimsAsync(user, ct);
-
-            // 6) Load roles ONLY for this app
+            // 5) Load roles ONLY for this app
             var roleNames = await GetUserAppRolesAsync(user.Id, app.Id, ct);
-            foreach (var r in roleNames)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, r));
-            }
 
-            claims.Add(new Claim(
-                "roles",
-                JsonSerializer.Serialize(roleNames),
-                Microsoft.IdentityModel.JsonWebTokens.JsonClaimValueTypes.Json));
+            // 6) Build all claims in one place (user + app + roles + jti)
+            var claims = await BuildAccessClaimsAsync(user, app, roleNames, jti, ct);
 
-            claims.Add(new Claim("app_code", app.Code));
-            claims.Add(new Claim("app_id", app.Id.ToString()));
-
-            // 7) Generate access token (placeholder, replace with real JWT)
+            // 7) Generate access token (placeholder for now)
+            // TODO: replace with your real _jwtIssuer.CreateAccessToken(issuer, audience, accessLifetime, keyMaterial, claims)
             var accessToken = $"access_{Guid.NewGuid():N}";
 
-            // 8) Generate refresh token (per user + app)
+            // 8) Refresh token per user + app
             var opaque = RefreshTokenHasher.GenerateOpaque();
             var hash = RefreshTokenHasher.Hash(opaque);
 
@@ -99,7 +84,7 @@ namespace SecuritySystem.Application.Services.Authentication
             {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
-                ApplicationId = app.Id,                   // ✅ per app
+                ApplicationId = app.Id,
                 TokenHash = hash,
                 ExpiresAt = DateTime.UtcNow.Add(refreshLifetime),
                 TokenCreatedAt = DateTime.UtcNow,
@@ -110,7 +95,7 @@ namespace SecuritySystem.Application.Services.Authentication
             await _unitOfWork.SaveChangesAsync();
             await RegisterLoginAttempt(req.Username, user.Id, true, "Login ok", ct);
 
-            // 9) Return tokens + roles for this app
+            // 9) Return tokens + roles (per app)
             return new LoginResult
             {
                 AccessToken = accessToken,
@@ -120,6 +105,7 @@ namespace SecuritySystem.Application.Services.Authentication
                 Roles = roleNames
             };
         }
+
 
         #region Private helpers
 
@@ -148,16 +134,38 @@ namespace SecuritySystem.Application.Services.Authentication
             return fakeUser;
         }
 
-        private Task<List<Claim>> BuildAccessClaimsAsync(AuthUser user, CancellationToken ct)
+        private Task<List<Claim>> BuildAccessClaimsAsync(AuthUser user,Applications app,List<string> roleNames,string jti,CancellationToken ct)
         {
             var claims = new List<Claim>
-            {
+            {    
+                // Identidad del usuario
+                new Claim("sub", user.Id.ToString()),                    // Subject
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+
+                // Datos de la aplicación
+                new Claim("app_id", app.Id.ToString()),
+                new Claim("app_code", app.Code),
+
+                // Identificador único del token
+                new Claim("jti", jti)
             };
 
-            return Task.FromResult(claims);
-        }
+               // Roles individuales (claim estándar)
+               foreach (var role in roleNames)
+               {
+                   claims.Add(new Claim(ClaimTypes.Role, role));
+               }
+
+               // Lista de roles en JSON, útil para backend/frontend
+               claims.Add(new Claim(
+                   "roles",
+                   JsonSerializer.Serialize(roleNames),
+                   Microsoft.IdentityModel.JsonWebTokens.JsonClaimValueTypes.Json));
+
+               return Task.FromResult(claims);
+           }
+
 
         private Task EnsureUserHasAccessToAppAsync(int userId, int applicationId, CancellationToken ct)
         {
