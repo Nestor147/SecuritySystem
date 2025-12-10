@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using SecuritySystem.Application.Interfaces.Authentication;
 using SecuritySystem.Application.Interfaces.Authorization;
 using SecuritySystem.Core.Custom.DisplayFormat;
 using SecuritySystem.Core.Entities;
@@ -15,6 +16,8 @@ using SecuritySystem.Core.QueryFilters.Autorization;
 using SecuritySystem.Core.QueryFilters.Autorization.Request;
 using SecuritySystem.Core.QueryFilters.Helper;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SecuritySystem.Application.Services.Authorization
 {
@@ -27,6 +30,7 @@ namespace SecuritySystem.Application.Services.Authorization
         private readonly IAuthorizationRepositoryValidator _authorizationRepositoryVal;
         private readonly IHelperProcessVal _helperProcessVal;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPrivateKeyProtector _privateKeyProtector;
         private readonly SecureSettings _secureSettings;
 
         private List<RowModelCmb> _comboRowModelList;
@@ -43,7 +47,8 @@ namespace SecuritySystem.Application.Services.Authorization
             IAuthorizationRepositoryValidator authorizationRepositoryVal,
             IHelperProcessVal helperProcessVal,
             IOptions<SecureSettings> secureSettings,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            IPrivateKeyProtector privateKeyProtector
         )
         {
             _paginationOptions = options.Value;
@@ -52,6 +57,7 @@ namespace SecuritySystem.Application.Services.Authorization
             _helperProcessVal = helperProcessVal;
             _secureSettings = secureSettings.Value;
             _unitOfWork = unitOfWork;
+            _privateKeyProtector = privateKeyProtector;
         }
 
         #endregion
@@ -98,39 +104,89 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 #endregion
 
-                var application = _unitOfWork.ApplicationRepository.Insert(new Applications
+                // 1) Insert application
+                var appInsertResult = await _unitOfWork.ApplicationRepository.InsertAsync(new Applications
                 {
                     Code = applicationQueryFilter.Code,
                     Description = applicationQueryFilter.Description,
                     Url = applicationQueryFilter.Url,
                     Icon = applicationQueryFilter.Icon,
-                    CreatedBy = "SECURITY_SYSTEM"
+                    CreatedBy = "SECURITY_SYSTEM" // or token username if you decode it
                 });
 
-                if (application.RowsAffected > 0)
+                if (appInsertResult.RowsAffected <= 0)
                 {
                     return new ResponsePost
                     {
-                        StatusCode = HttpStatusCode.OK,
-                        Mensajes = new[]
-                        {
-                            new Message
-                            {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "The application was created successfully."
-                            }
-                        }
+                        StatusCode = HttpStatusCode.NoContent
                     };
                 }
 
+                // Adjust this according to your Insert() return type
+                int applicationId = int.Parse(appInsertResult.GeneratedId);
+
+                // 2) Generate RSA 4096 key pair
+                using var rsa = RSA.Create(4096);
+
+                string publicKeyPem = ExportPublicKeyPem(rsa);
+                string privateKeyPem = ExportPrivateKeyPem(rsa);
+
+                // 3) Encrypt private key with master key (AES-GCM)
+                byte[] encryptedPrivateKey = _privateKeyProtector.EncryptPrivateKey(privateKeyPem);
+
+                // 4) Compute a thumbprint from the public key
+                string thumbprint = ComputeThumbprint(publicKeyPem);
+
+                var now = DateTime.UtcNow;
+
+                // 5) Insert CryptoKey row
+                _unitOfWork.CryptoKeyRepository.Insert(new CryptoKey
+                {
+                    Name = $"{applicationQueryFilter.Code}-RSA-Signing-v1",
+                    KeyType = 1,      // 1 = RSA signing
+                    Version = 1,
+                    ApplicationId = applicationId,
+                    PublicKeyPem = publicKeyPem,
+                    EncryptedPrivateKey = encryptedPrivateKey,
+                    IsActive = true,
+                    StartDate = now,
+                    EndDate = null,
+                    Thumbprint = thumbprint,
+                    RecordStatus = 1,
+                    CreatedAt = now,
+                    CreatedBy = "SECURITY_SYSTEM" // or token username
+                });
+
+                await _unitOfWork.SaveChangesAsync();
+
                 return new ResponsePost
                 {
-                    StatusCode = HttpStatusCode.NoContent
+                    StatusCode = HttpStatusCode.OK,
+                    Mensajes = new[]
+                    {
+                        new Message
+                        {
+                            Tipo = TypeMessage.information.ToString(),
+                            Descripcion = "The application and its signing key were created successfully."
+                        }
+                    }
                 };
             }
-            catch (Exception err)
+            catch (Exception ex)
             {
-                throw new Exception(err.Message);
+                // Optionally log ex
+                return new ResponsePost
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    Mensajes = new[]
+                    {
+                        new Message
+                        {
+                            Tipo = TypeMessage.error.ToString(),
+                            Descripcion = "Unexpected error while creating the application: " + ex.Message
+                        }
+                    }
+                };
             }
         }
 
@@ -766,6 +822,40 @@ namespace SecuritySystem.Application.Services.Authorization
             {
                 throw new Exception(err.Message);
             }
+        }
+
+        #endregion
+
+        #region RSA helpers
+
+        private static string ExportPublicKeyPem(RSA rsa)
+        {
+            var publicKey = rsa.ExportSubjectPublicKeyInfo();
+            var base64 = Convert.ToBase64String(publicKey, Base64FormattingOptions.InsertLineBreaks);
+            var sb = new StringBuilder();
+            sb.AppendLine("-----BEGIN PUBLIC KEY-----");
+            sb.AppendLine(base64);
+            sb.AppendLine("-----END PUBLIC KEY-----");
+            return sb.ToString();
+        }
+
+        private static string ExportPrivateKeyPem(RSA rsa)
+        {
+            var privateKey = rsa.ExportPkcs8PrivateKey();
+            var base64 = Convert.ToBase64String(privateKey, Base64FormattingOptions.InsertLineBreaks);
+            var sb = new StringBuilder();
+            sb.AppendLine("-----BEGIN PRIVATE KEY-----");
+            sb.AppendLine(base64);
+            sb.AppendLine("-----END PRIVATE KEY-----");
+            return sb.ToString();
+        }
+
+        private static string ComputeThumbprint(string publicKeyPem)
+        {
+            using var sha = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(publicKeyPem);
+            var hash = sha.ComputeHash(bytes);
+            return Convert.ToHexString(hash); // e.g. "A1B2C3..."
         }
 
         #endregion

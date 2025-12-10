@@ -11,7 +11,7 @@ namespace SecuritySystem.Application.Services.Authentication
 
         public AesGcmPrivateKeyProtector(IConfiguration cfg)
         {
-            // MasterKey should come from env var or KeyVault, not from plain appsettings.json
+            // MasterKey should come from env var or KeyVault in production
             var keyBase64 = cfg["Auth:MasterKeyBase64"];
             if (string.IsNullOrWhiteSpace(keyBase64))
                 throw new InvalidOperationException("Auth:MasterKeyBase64 is not configured.");

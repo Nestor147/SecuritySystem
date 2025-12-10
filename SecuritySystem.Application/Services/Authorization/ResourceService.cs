@@ -691,7 +691,7 @@ namespace SecuritySystem.Application.Services.Authorization
                                         new ParameterModel
                                         {
                                             NombreParametro = "NodeId",
-                                            ValorParametro  = r.NodeId.ToString()
+                                            ValorParametro  = r.ResourceId.ToString()
                                         }
                                     }
                                 },
@@ -705,7 +705,7 @@ namespace SecuritySystem.Application.Services.Authorization
                                         new ParameterModel
                                         {
                                             NombreParametro = "NodeId",
-                                            ValorParametro  = r.NodeId.ToString()
+                                            ValorParametro  = r.ResourceId.ToString()
                                         }
                                     }
                                 }
