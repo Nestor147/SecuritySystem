@@ -5,6 +5,7 @@ using SecuritySystem.Application.Interfaces.Authentication;
 using SecuritySystem.Application.Interfaces.Authorization;
 using SecuritySystem.Application.Services.Authentication;
 using SecuritySystem.Application.Services.Authorization;
+using SecuritySystem.Application.Services.Users;
 using SecuritySystem.Core.Interfaces;
 using SecuritySystem.Core.Interfaces.Core;
 using SecuritySystem.Core.Interfaces.Core.SQLServer;
@@ -28,14 +29,10 @@ namespace SecuritySystem.Infrastructure.DependencyInjection
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            //services.AddScoped<IAuthService, AuthService>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            ////validadores
             services.AddTransient<IAuthorizationRepositoryValidator, AuthorizationRepositoryValidator>();
-            ////Repositorios
 
-            ////helper
+            // helper
             services.AddScoped<IHelperProcessVal, HelpersRepositoryVal>();
             services.AddScoped<IAuthorizationRepository, AuthorizationRepository>();
             services.AddScoped<IApplicationsService, ApplicationsService>();
@@ -43,11 +40,20 @@ namespace SecuritySystem.Infrastructure.DependencyInjection
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<IAuthService, AuthService>();
-            //services.AddScoped<IObjetoService, ObjetoService>();
-            //services.AddScoped<IRolService, RolService>();
 
-            //ADO
+            // 🔐 App key & token policy providers
+            services.AddMemoryCache();
+            services.AddScoped<IAppSigningKeyProvider, AppSigningKeyProvider>();
+            services.AddScoped<IAppTokenPolicyProvider, AppTokenPolicyProvider>();
+
+            // 🔐 NUEVO: protector de llave privada (dummy por ahora)
+            services.AddScoped<IPrivateKeyProtector, AesGcmPrivateKeyProtector>();
+
+            // Auth / Users
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
+
+            // ADO
             services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
             services.AddScoped<IAdo, Ado>();
 

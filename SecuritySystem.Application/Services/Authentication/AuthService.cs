@@ -16,14 +16,12 @@ namespace SecuritySystem.Application.Services.Authentication
         private readonly IAppSigningKeyProvider _appSigningKeyProvider;
         private readonly IAppTokenPolicyProvider _appTokenPolicyProvider;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IJwtIssuer _jwtIssuer;
         private readonly IConfiguration _cfg;
         private readonly IPasswordHasher _hasher;
         private readonly IHttpContextAccessor _http;
 
         public AuthService(
             IUnitOfWork unitOfWork,
-            IJwtIssuer jwtIssuer,
             IPasswordHasher hasher,
             IConfiguration cfg,
             IHttpContextAccessor http,
@@ -32,13 +30,13 @@ namespace SecuritySystem.Application.Services.Authentication
         )
         {
             _unitOfWork = unitOfWork;
-            _jwtIssuer = jwtIssuer;
             _hasher = hasher;
             _cfg = cfg;
             _http = http;
             _appSigningKeyProvider = appSigningKeyProvider;
             _appTokenPolicyProvider = appTokenPolicyProvider;
         }
+
 
         public async Task<LoginResult> LoginAsync(LoginRequest req, CancellationToken ct)
         {

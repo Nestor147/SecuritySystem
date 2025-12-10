@@ -8,7 +8,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<ApplicationTokenPolicy> builder)
         {
-            builder.ToTable("ApplicationTokenPolicies", "AUTORIZACION");
+            builder.ToTable("ApplicationTokenPolicies", "Autenticacion");
 
             // Primary Key (one policy per application)
             builder.HasKey(e => e.ApplicationId);

@@ -13,7 +13,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<LoginAudit> builder)
         {
-            builder.ToTable("LoginAudit", "AUTORIZACION");
+            builder.ToTable("LoginAudit", "Autenticacion");
 
             builder.HasKey(e => e.Id);
 

@@ -9,7 +9,7 @@ namespace SecuritySystem.Infrastructure.Mapping
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
             // ✅ Esquema correcto según tu BD actual
-            builder.ToTable("RefreshTokens", "AUTENTICACION");
+            builder.ToTable("RefreshTokens", "Autenticacion");
 
             builder.HasKey(e => e.Id);
 

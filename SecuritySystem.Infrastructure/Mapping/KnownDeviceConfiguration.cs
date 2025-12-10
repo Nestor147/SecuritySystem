@@ -8,7 +8,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<KnownDevice> builder)
         {
-            builder.ToTable("KnownDevices", "AUTORIZACION");
+            builder.ToTable("KnownDevices", "Autenticacion");
 
             builder.HasKey(e => e.Id);
 

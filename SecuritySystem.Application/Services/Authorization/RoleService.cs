@@ -739,7 +739,6 @@ namespace SecuritySystem.Application.Services.Authorization
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
-
                 #endregion
 
                 //getRoleQueryFilter.ApplicationId = _encryptionHelper.DecryptParameterId(getRoleQueryFilter.ApplicationId);

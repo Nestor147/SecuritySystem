@@ -14,6 +14,9 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 
 var cfg = builder.Configuration;
 
+// ?? HttpContextAccessor (para AuthService: IP, UserAgent, etc.)
+builder.Services.AddHttpContextAccessor();
+
 // Infrastructure (Db, Jwt, HttpClients, etc.)
 builder.Services.AddInfrastructure(cfg);
 // builder.Services.AddAtacadoSecurity(cfg); // si aún lo usas
@@ -76,8 +79,11 @@ else
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Backend Atacado API V1");
-    c.RoutePrefix = "swagger";
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Backend Atacado API V1");
+        c.RoutePrefix = "swagger";
+    });
 });
 
 app.UseHttpsRedirection();

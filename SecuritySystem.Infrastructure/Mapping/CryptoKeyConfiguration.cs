@@ -8,7 +8,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<CryptoKey> builder)
         {
-            builder.ToTable("CryptoKeys", "AUTORIZACION");
+            builder.ToTable("CryptoKeys", "Autenticacion");
 
             // Primary Key
             builder.HasKey(e => e.Id);

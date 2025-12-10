@@ -13,7 +13,7 @@ namespace SecuritySystem.Infrastructure.Mapping
     {
         public void Configure(EntityTypeBuilder<RevokedToken> builder)
         {
-            builder.ToTable("RevokedTokens", "AUTORIZACION");
+            builder.ToTable("RevokedTokens", "Autenticacion");
 
             builder.HasKey(e => e.Jti);
 

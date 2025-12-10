@@ -35,7 +35,11 @@ CREATE TABLE Autorizacion.Applications (
     CreatedBy    NVARCHAR(100) NOT NULL DEFAULT SYSTEM_USER
 );
 GO
-
+{
+  "username": "nestor@gmail.com",
+  "password": "Pazyfuerza123",
+  "applicationCode": "1"
+}
 ------------------------------------------------------------
 -- 2.2 Users (AUTHENTICATION USERS: schema Autenticacion)
 --     (se crea aquí por dependencia de FKs de Autorizacion.RoleUsers)
