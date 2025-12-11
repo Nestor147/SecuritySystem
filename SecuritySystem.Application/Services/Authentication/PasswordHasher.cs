@@ -7,19 +7,23 @@ using System.Threading.Tasks;
 
 namespace SecuritySystem.Application.Services.Authentication
 {
-    public class PasswordHasher : IPasswordHasher
+    public sealed class BcryptPasswordHasher : IPasswordHasher
     {
-        // Implementación simple de ejemplo: CAMBIA ESTO por BCrypt/Argon2
         public string Hash(string password)
         {
-            // NO usar en producción, es solo placeholder
-            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(password));
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Password cannot be null or empty.", nameof(password));
+
+            // workFactor = cost; 12 is a good default for production
+            return BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
         }
 
         public bool Verify(string password, string passwordHash)
         {
-            var hashed = Hash(password);
-            return hashed == passwordHash;
+            if (string.IsNullOrEmpty(passwordHash))
+                return false;
+
+            return BCrypt.Net.BCrypt.Verify(password, passwordHash);
         }
     }
 }

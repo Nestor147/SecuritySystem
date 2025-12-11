@@ -39,10 +39,11 @@ namespace SecuritySystem.Infrastructure.DependencyInjection
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IRoleService, RoleService>();
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IPasswordHasher, BcryptPasswordHasher>();
 
             // 🔐 App key & token policy providers
             services.AddMemoryCache();
+            services.AddScoped<IJwtIssuer, RsaJwtIssuer>();
             services.AddScoped<IAppSigningKeyProvider, AppSigningKeyProvider>();
             services.AddScoped<IAppTokenPolicyProvider, AppTokenPolicyProvider>();
 

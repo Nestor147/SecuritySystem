@@ -19,6 +19,7 @@ namespace SecuritySystem.Application.Services.Authentication
         private readonly IConfiguration _cfg;
         private readonly IPasswordHasher _hasher;
         private readonly IHttpContextAccessor _http;
+        private readonly IJwtIssuer _jwtIssuer;  // <- NUEVO
 
         public AuthService(
             IUnitOfWork unitOfWork,
@@ -26,7 +27,8 @@ namespace SecuritySystem.Application.Services.Authentication
             IConfiguration cfg,
             IHttpContextAccessor http,
             IAppSigningKeyProvider appSigningKeyProvider,
-            IAppTokenPolicyProvider appTokenPolicyProvider
+            IAppTokenPolicyProvider appTokenPolicyProvider,
+            IJwtIssuer jwtIssuer   // <- NUEVO
         )
         {
             _unitOfWork = unitOfWork;
@@ -35,6 +37,7 @@ namespace SecuritySystem.Application.Services.Authentication
             _http = http;
             _appSigningKeyProvider = appSigningKeyProvider;
             _appTokenPolicyProvider = appTokenPolicyProvider;
+            _jwtIssuer = jwtIssuer;
         }
 
 
@@ -45,12 +48,14 @@ namespace SecuritySystem.Application.Services.Authentication
             if (user == null)
                 throw new InvalidCredentialsException("Invalid username or password.");
 
-            // 2) Resolve application
+            // 2) Resolve application (by Code)
             var app = await _unitOfWork.ApplicationRepository
-                .FirstOrDefaultAsync(a => a.Code == req.ApplicationCode && a.RecordStatus == 1, ct)
-                ?? throw new AppNotFoundException($"Application {req.ApplicationCode} does not exist or is inactive.");
+                .FirstOrDefaultAsync(a => a.Id == req.ApplicationId && a.RecordStatus == 1, ct)
+                ?? throw new AppNotFoundException($"Application {req.ApplicationId} does not exist or is inactive.");
+
 
             // 3) Ensure user is allowed in this application
+            // IMPORTANT: for now we DON'T block if the user has no roles.
             await EnsureUserHasAccessToAppAsync(user.Id, app.Id, ct);
 
             // 4) Get signing key & token policy
@@ -67,12 +72,29 @@ namespace SecuritySystem.Application.Services.Authentication
             // 5) Load roles ONLY for this app
             var roleNames = await GetUserAppRolesAsync(user.Id, app.Id, ct);
 
-            // 6) Build all claims in one place (user + app + roles + jti)
-            var claims = await BuildAccessClaimsAsync(user, app, roleNames, jti, ct);
+            // 6) Extra claims (username, email, JSON roles, etc.)
+            var extraClaims = await BuildAccessClaimsAsync(user, app, roleNames, jti, ct);
 
-            // 7) Generate access token (placeholder for now)
-            // TODO: replace with your real _jwtIssuer.CreateAccessToken(issuer, audience, accessLifetime, keyMaterial, claims)
-            var accessToken = $"access_{Guid.NewGuid():N}";
+            // 7) Build TokenDescriptor for RSA JWT
+            // 7) Build TokenDescriptor for RSA JWT
+            var descriptor = new TokenDescriptor(
+                subject: user.Id.ToString(),
+                issuer: issuer,
+                audience: audience,
+                jti: jti,
+                lifetime: accessLifetime,
+                roles: roleNames,
+                claims: new Dictionary<string, object>
+                {
+                    ["username"] = user.Username,
+                    ["email"] = user.Email ?? string.Empty,
+                    ["app_code"] = app.Code
+                },
+                extraClaims: extraClaims
+            );
+
+
+            var accessToken = _jwtIssuer.CreateAccessToken(descriptor, keyMaterial);
 
             // 8) Refresh token per user + app
             var opaque = RefreshTokenHasher.GenerateOpaque();
@@ -98,11 +120,12 @@ namespace SecuritySystem.Application.Services.Authentication
             {
                 AccessToken = accessToken,
                 RefreshToken = opaque,
-                ApplicationId = app.Id,
-                ApplicationCode = app.Code,
-                Roles = roleNames
+                //ApplicationId = app.Id,
+                //ApplicationCode = app.Code,
+                //Roles = roleNames
             };
         }
+
 
 
         #region Private helpers
@@ -111,58 +134,66 @@ namespace SecuritySystem.Application.Services.Authentication
         {
             public int Id { get; set; }
             public string Username { get; set; } = string.Empty;
+            public string? Email { get; set; }
             public string PasswordHash { get; set; } = string.Empty;
             public int RecordStatus { get; set; }
         }
 
         private async Task<AuthUser?> GetUserByCredentialsAsync(LoginRequest req, CancellationToken ct)
         {
-            // TODO: replace with your real UserRepository query
-            var fakeUser = new AuthUser
-            {
-                Id = 1,
-                Username = req.Username,
-                PasswordHash = _hasher.Hash("123456"),
-                RecordStatus = 1
-            };
+            // We allow login by Username OR Email
+            var entity = await _unitOfWork.UserRepository
+                .FirstOrDefaultAsync(u =>
+                    u.RecordStatus == 1 &&
+                    (u.Username == req.Username || u.Email == req.Username),
+                    ct);
 
-            if (!_hasher.Verify(req.Password, fakeUser.PasswordHash))
+            if (entity == null)
                 return null;
 
-            return fakeUser;
+            // Verify password against BCrypt hash
+            if (!_hasher.Verify(req.Password, entity.PasswordHash))
+                return null;
+
+            return new AuthUser
+            {
+                Id = entity.Id,
+                Username = entity.Username,
+                Email = entity.Email,
+                PasswordHash = entity.PasswordHash,
+                RecordStatus = entity.RecordStatus
+            };
         }
 
-        private Task<List<Claim>> BuildAccessClaimsAsync(AuthUser user,Applications app,List<string> roleNames,string jti,CancellationToken ct)
+        private Task<List<Claim>> BuildAccessClaimsAsync(
+     AuthUser user,
+     Applications app,
+     List<string> roleNames,
+     string jti,
+     CancellationToken ct)
         {
-            var claims = new List<Claim>
-            {    
-                // Identidad del usuario
-                new Claim("sub", user.Id.ToString()),                    // Subject
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
+            var claims = new List<Claim>();
 
-                // Datos de la aplicación
-                new Claim("app_id", app.Id.ToString()),
-                new Claim("app_code", app.Code),
+            // Standard role claims
+            foreach (var role in roleNames)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
-                // Identificador único del token
-                new Claim("jti", jti)
-            };
+            // JSON list of roles (for frontend/backend convenience)
+            claims.Add(new Claim(
+                "roles",
+                JsonSerializer.Serialize(roleNames),
+                Microsoft.IdentityModel.JsonWebTokens.JsonClaimValueTypes.Json));
 
-               // Roles individuales (claim estándar)
-               foreach (var role in roleNames)
-               {
-                   claims.Add(new Claim(ClaimTypes.Role, role));
-               }
+            // Username & email
+            claims.Add(new Claim("username", user.Username));
+            if (!string.IsNullOrWhiteSpace(user.Email))
+                claims.Add(new Claim("email", user.Email));
 
-               // Lista de roles en JSON, útil para backend/frontend
-               claims.Add(new Claim(
-                   "roles",
-                   JsonSerializer.Serialize(roleNames),
-                   Microsoft.IdentityModel.JsonWebTokens.JsonClaimValueTypes.Json));
+            return Task.FromResult(claims);
+        }
 
-               return Task.FromResult(claims);
-           }
 
 
         private Task EnsureUserHasAccessToAppAsync(int userId, int applicationId, CancellationToken ct)
@@ -172,12 +203,23 @@ namespace SecuritySystem.Application.Services.Authentication
             return Task.CompletedTask;
         }
 
-        private Task<List<string>> GetUserAppRolesAsync(int userId, int applicationId, CancellationToken ct)
+        private async Task<List<string>> GetUserAppRolesAsync(int userId, int applicationId, CancellationToken ct)
         {
-            // TODO: implement real query to get roles for this user in this app
-            var roles = new List<string>();
-            return Task.FromResult(roles);
+            var roleUsers = await _unitOfWork.RoleUserRepository
+                .WhereAsync(ru => ru.UserId == userId && ru.RecordStatus == 1, ct);
+
+            var roleIds = roleUsers.Select(ru => ru.RoleId).Distinct().ToList();
+            if (!roleIds.Any())
+                return new List<string>();
+
+            var roles = await _unitOfWork.RoleRepository
+                .WhereAsync(r => roleIds.Contains(r.Id) &&
+                                 r.ApplicationId == applicationId &&
+                                 r.RecordStatus == 1, ct);
+
+            return roles.Select(r => r.Name).Distinct().ToList();
         }
+
 
         private string GetClientIp()
         {
