@@ -94,8 +94,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.warning.ToString(),
-                                    Descripcion = "There is another node with this name in this application."
+                                    Type        = TypeMessage.warning.ToString(),
+                                    Description = "There is another node with this name in this application."
                                 }
                             },
                             StatusCode = HttpStatusCode.BadRequest
@@ -111,8 +111,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.warning.ToString(),
-                                    Descripcion = "There is another page with this name in this application."
+                                    Type        = TypeMessage.warning.ToString(),
+                                    Description = "There is another page with this name in this application."
                                 }
                             },
                             StatusCode = HttpStatusCode.BadRequest
@@ -128,8 +128,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.warning.ToString(),
-                                    Descripcion = "There is another page with this URL in this application."
+                                    Type        = TypeMessage.warning.ToString(),
+                                    Description = "There is another page with this URL in this application."
                                 }
                             },
                             StatusCode = HttpStatusCode.BadRequest
@@ -165,8 +165,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.information.ToString(),
-                                    Descripcion = "The node was registered successfully."
+                                    Type        = TypeMessage.information.ToString(),
+                                    Description = "The node was registered successfully."
                                 }
                             }
                         };
@@ -180,8 +180,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "The page was registered successfully."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "The page was registered successfully."
                             }
                         }
                     };
@@ -248,8 +248,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.warning.ToString(),
-                                    Descripcion = "There is another node with this name in this application."
+                                    Type        = TypeMessage.warning.ToString(),
+                                    Description = "There is another node with this name in this application."
                                 }
                             },
                             StatusCode = HttpStatusCode.BadRequest
@@ -265,8 +265,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.warning.ToString(),
-                                    Descripcion = "There is another page with this name in this application."
+                                    Type        = TypeMessage.warning.ToString(),
+                                    Description = "There is another page with this name in this application."
                                 }
                             },
                             StatusCode = HttpStatusCode.BadRequest
@@ -282,8 +282,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.warning.ToString(),
-                                    Descripcion = "There is another page with this URL in this application."
+                                    Type        = TypeMessage.warning.ToString(),
+                                    Description = "There is another page with this URL in this application."
                                 }
                             },
                             StatusCode = HttpStatusCode.BadRequest
@@ -327,8 +327,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.information.ToString(),
-                                    Descripcion = "The node was updated successfully."
+                                    Type        = TypeMessage.information.ToString(),
+                                    Description = "The node was updated successfully."
                                 }
                             }
                         };
@@ -342,8 +342,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "The page was updated successfully."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "The page was updated successfully."
                             }
                         }
                     };
@@ -387,8 +387,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "Resource not found."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "Resource not found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -445,8 +445,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo        = TypeMessage.error.ToString(),
-                            Descripcion = $"Unexpected error."
+                            Type        = TypeMessage.error.ToString(),
+                            Description = $"Unexpected error."
                         },
                     },
                     StatusCode = HttpStatusCode.InternalServerError
@@ -493,8 +493,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo        = TypeMessage.information.ToString(),
-                                    Descripcion = "The node was deleted."
+                                    Type        = TypeMessage.information.ToString(),
+                                    Description = "The node was deleted."
                                 }
                             }
                         };
@@ -508,8 +508,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "The page was deleted."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "The page was deleted."
                             }
                         }
                     };
@@ -537,7 +537,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = validation.ValidationMessages.ToArray(),
+                        Messages = validation.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -562,12 +562,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "No data found for the selected filters."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "No data found for the selected filters."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -739,8 +739,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo        = TypeMessage.error.ToString(),
-                            Descripcion = $"Unexpected error ."
+                            Type        = TypeMessage.error.ToString(),
+                            Description = $"Unexpected error ."
                         },
                     },
                     StatusCode = HttpStatusCode.InternalServerError
@@ -758,7 +758,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = validation.ValidationMessages.ToArray(),
+                        Messages = validation.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -773,12 +773,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "No resources found."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "No resources found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -803,7 +803,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 return new ResponseGet
                 {
-                    Datos = comboList,
+                    Data = comboList,
                     StatusCode = HttpStatusCode.OK
                 };
             }

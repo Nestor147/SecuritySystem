@@ -5,6 +5,7 @@ using SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi.Details;
 using SecuritySystem.Core.Entities.SealedAuthentication;
 using SecuritySystem.Core.Enums;
 using SecuritySystem.Core.Interfaces.Core;
+using SecuritySystem.Core.QueryFilters.Autorization;
 using System.Net;
 
 namespace SecuritySystem.Application.Services.Users
@@ -36,8 +37,8 @@ namespace SecuritySystem.Application.Services.Users
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.error.ToString(),
-                                Descripcion = "Request body cannot be null."
+                                Type = TypeMessage.error.ToString(),
+                                Description = "Request body cannot be null."
                             }
                         }
                     };
@@ -52,8 +53,8 @@ namespace SecuritySystem.Application.Services.Users
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.warning.ToString(),
-                                Descripcion = "Email and password are required."
+                                Type = TypeMessage.warning.ToString(),
+                                Description = "Email and password are required."
                             }
                         }
                     };
@@ -73,8 +74,8 @@ namespace SecuritySystem.Application.Services.Users
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = $"User with email '{request.Email}' already exists."
+                                Type = TypeMessage.information.ToString(),
+                                Description = $"User with email '{request.Email}' already exists."
                             }
                         }
                     };
@@ -119,8 +120,8 @@ namespace SecuritySystem.Application.Services.Users
                     {
                         new Message
                         {
-                            Tipo = TypeMessage.success.ToString(),
-                            Descripcion = "User created successfully."
+                            Type = TypeMessage.success.ToString(),
+                            Description = "User created successfully."
                         }
                     }
                     // Si tu ResponsePost tiene más campos (Id, Respuesta, etc.),
@@ -137,10 +138,88 @@ namespace SecuritySystem.Application.Services.Users
                     {
                         new Message
                         {
-                            Tipo = TypeMessage.error.ToString(),
-                            Descripcion = $"An unexpected error occurred while creating the user: {ex.Message}"
+                            Type = TypeMessage.error.ToString(),
+                            Description = $"An unexpected error occurred while creating the user: {ex.Message}"
                         }
                     }
+                };
+            }
+        }
+
+        public async Task<ResponseGet> SearchUsersAsync(string searchCriteria, CancellationToken ct)
+        {
+            try
+            {
+                #region Basic validation
+                if (string.IsNullOrWhiteSpace(searchCriteria))
+                {
+                    return new ResponseGet
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Messages = new[]
+                        {
+                        new Message
+                        {
+                            Type = TypeMessage.warning.ToString(),
+                            Description = "Search criteria cannot be empty."
+                        }
+                    }
+                    };
+                }
+                #endregion
+
+                var normalized = searchCriteria.Trim().ToLower();
+
+                // Recupera usuarios activos cuyo Username o Email contengan el criterio
+                var users = await _unitOfWork.UserRepository.WhereAsync(
+                    u =>
+                        u.RecordStatus == 1 &&
+                        (
+                            (u.Username != null && u.Username.ToLower().Contains(normalized)) ||
+                            (u.Email != null && u.Email.ToLower().Contains(normalized))
+                        ),
+                    ct
+                );
+
+                var results = users
+                    .Select(u => new UserSearchQueryFilter
+                    {
+                        Id = u.Id,
+                        Username = u.Username,
+                        Email = u.Email
+                    })
+                    .ToList();
+
+                return new ResponseGet
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    // si tu ResponsePost tiene una propiedad Respuesta, la puedes usar:
+                    Data = results, // <- aquí devuelves Id, Username y Email
+                    Messages = new[]
+                    {
+                    new Message
+                    {
+                        Type = TypeMessage.success.ToString(),
+                        Description = results.Any()
+                            ? "Users retrieved successfully."
+                            : "No users found for the given criteria."
+                    }
+                }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseGet
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    Messages = new[]
+                    {
+                    new Message
+                    {
+                        Type = TypeMessage.error.ToString(),
+                        Description = $"An unexpected error occurred while searching users: {ex.Message}"
+                    }
+                }
                 };
             }
         }

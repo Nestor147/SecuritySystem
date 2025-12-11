@@ -5,7 +5,9 @@ using SecuritySystem.Application.Helpers.Authentication;
 using SecuritySystem.Application.Interfaces.Authentication;
 using SecuritySystem.Application.Interfaces.Authentication.Dtos;
 using SecuritySystem.Core.Entities;
+using SecuritySystem.Core.Entities.SealedAuthentication;
 using SecuritySystem.Core.Interfaces.Core;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -206,8 +208,7 @@ namespace SecuritySystem.Application.Services.Authentication
         private async Task<List<string>> GetUserAppRolesAsync(int userId, int applicationId, CancellationToken ct)
         {
             var roleUsers = await _unitOfWork.RoleUserRepository
-                .WhereAsync(ru => ru.UserId == userId && ru.RecordStatus == 1, ct);
-
+                .GetByCustomQuery(roles=>roles.Where(ru => ru.UserId == userId && ru.RecordStatus == 1));
             var roleIds = roleUsers.Select(ru => ru.RoleId).Distinct().ToList();
             if (!roleIds.Any())
                 return new List<string>();
@@ -238,5 +239,117 @@ namespace SecuritySystem.Application.Services.Authentication
         }
 
         #endregion
+
+
+        public async Task<LoginResult> RefreshAsync(RefreshRequest req, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(req.RefreshToken))
+                throw new InvalidCredentialsException("Refresh token is required.");
+
+            var hash = RefreshTokenHasher.Hash(req.RefreshToken);
+
+            // 1) Buscar el refresh token en BD
+            var tokenEntity = await _unitOfWork.RefreshTokenRepository
+                .FirstOrDefaultAsync(t => t.TokenHash == hash, ct);
+
+            if (tokenEntity == null || tokenEntity.ExpiresAt <= DateTime.UtcNow)
+                throw new InvalidCredentialsException("Refresh token is invalid or expired.");
+
+            // 2) Cargar usuario
+            var userEntity = await _unitOfWork.UserRepository
+                .FirstOrDefaultAsync(u => u.Id == tokenEntity.UserId && u.RecordStatus == 1, ct)
+                ?? throw new InvalidCredentialsException("User not found or inactive.");
+
+            var user = new AuthUser
+            {
+                Id = userEntity.Id,
+                Username = userEntity.Username,
+                Email = userEntity.Email,
+                PasswordHash = userEntity.PasswordHash,
+                RecordStatus = userEntity.RecordStatus
+            };
+
+            // 3) Cargar aplicación
+            var app = await _unitOfWork.ApplicationRepository
+                .FirstOrDefaultAsync(a => a.Id == tokenEntity.ApplicationId && a.RecordStatus == 1, ct)
+                ?? throw new AppNotFoundException($"Application {tokenEntity.ApplicationId} does not exist or is inactive.");
+
+            // 4) Llave RSA y política
+            var keyMaterial = await _appSigningKeyProvider.GetActiveSigningKeyAsync(app.Id, ct);
+            var policy = await _appTokenPolicyProvider.GetPolicyAsync(app.Id, ct);
+
+            var accessLifetime = TimeSpan.FromMinutes(policy.AccessTokenMinutes);
+            var refreshLifetime = TimeSpan.FromDays(policy.RefreshTokenDays);
+
+            var issuer = $"Authentication.API/{app.Code}";
+            var audience = $"Authentication.Clients/{app.Code}";
+            var jti = Guid.NewGuid().ToString("N");
+
+            // 5) Roles del usuario para esta app
+            var roleNames = await GetUserAppRolesAsync(user.Id, app.Id, ct);
+
+            // 6) Claims extra
+            var extraClaims = await BuildAccessClaimsAsync(user, app, roleNames, jti, ct);
+
+            // 7) Descriptor y nuevo access token
+            var descriptor = new TokenDescriptor(
+                subject: user.Id.ToString(),
+                issuer: issuer,
+                audience: audience,
+                jti: jti,
+                lifetime: accessLifetime,
+                roles: roleNames,
+                claims: new Dictionary<string, object>
+                {
+                    ["username"] = user.Username,
+                    ["email"] = user.Email ?? string.Empty,
+                    ["app_code"] = app.Code
+                },
+                extraClaims: extraClaims
+            );
+
+            var newAccessToken = _jwtIssuer.CreateAccessToken(descriptor, keyMaterial);
+
+            // 8) Rotar refresh token (más seguro)
+            var newOpaque = RefreshTokenHasher.GenerateOpaque();
+            var newHash = RefreshTokenHasher.Hash(newOpaque);
+
+            tokenEntity.TokenHash = newHash;
+            tokenEntity.TokenCreatedAt = DateTime.UtcNow;
+            tokenEntity.ExpiresAt = DateTime.UtcNow.Add(refreshLifetime);
+            tokenEntity.IPAddress = GetClientIp();
+            tokenEntity.UserAgent = GetUserAgent();
+
+             _unitOfWork.RefreshTokenRepository.Update(tokenEntity);
+            await _unitOfWork.SaveChangesAsync();
+
+            // 9) Devolver nuevo access + refresh
+            return new LoginResult
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newOpaque,
+
+            };
+        }
+
+        public async Task LogoutAsync(LogoutRequest req, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(req.RefreshToken))
+                return; // logout idempotente
+
+            var hash = RefreshTokenHasher.Hash(req.RefreshToken);
+
+            var tokenEntity = await _unitOfWork.RefreshTokenRepository
+                .FirstOrDefaultAsync(t => t.TokenHash == hash, ct);
+
+            if (tokenEntity == null)
+                return;
+
+            // Puedes borrar o marcar como revocado; aquí lo borramos
+             _unitOfWork.RefreshTokenRepository.Delete(tokenEntity);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+
     }
 }

@@ -198,8 +198,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.warning.ToString(),
-                                Descripcion = "A role with this name and description is already registered in this application."
+                                Type = TypeMessage.warning.ToString(),
+                                Description = "A role with this name and description is already registered in this application."
                             }
                         },
                         StatusCode = HttpStatusCode.BadRequest
@@ -226,8 +226,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "The role was successfully created."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "The role was successfully created."
                             }
                         }
                     };
@@ -313,8 +313,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.warning.ToString(),
-                                Descripcion = "A role with this name and description is already registered in this application."
+                                Type = TypeMessage.warning.ToString(),
+                                Description = "A role with this name and description is already registered in this application."
                             }
                         },
                         StatusCode = HttpStatusCode.BadRequest
@@ -349,8 +349,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "The role was successfully updated."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "The role was successfully updated."
                             }
                         }
                     };
@@ -419,8 +419,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "Role not found."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "Role not found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -472,8 +472,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo = TypeMessage.warning.ToString(),
-                                    Descripcion =
+                                    Type = TypeMessage.warning.ToString(),
+                                    Description =
                                         $"The role cannot be deleted because there are {roleUsers.Count()} user(s) assigned to it. Users with this role: {usersMessage}"
                                 }
                             },
@@ -488,8 +488,8 @@ namespace SecuritySystem.Application.Services.Authorization
                             {
                                 new Message
                                 {
-                                    Tipo = TypeMessage.warning.ToString(),
-                                    Descripcion =
+                                    Type = TypeMessage.warning.ToString(),
+                                    Description =
                                         $"The role cannot be deleted because there are {roleUsers.Count()} users assigned to it."
                                 }
                             },
@@ -518,8 +518,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "The role was deleted."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "The role was deleted."
                             }
                         }
                     };
@@ -550,7 +550,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet()
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -706,12 +706,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet()
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No data found that matches the selected filters."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No data found that matches the selected filters."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -735,7 +735,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet()
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -766,7 +766,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                     responseGet = new ResponseGet()
                     {
-                        Datos = cmbList,
+                        Data = cmbList,
                         StatusCode = HttpStatusCode.OK
                     };
                 }
@@ -774,12 +774,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     responseGet = new ResponseGet()
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No roles were found."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No roles were found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -805,7 +805,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet()
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -942,12 +942,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet()
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No data found that matches the selected filters."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No data found that matches the selected filters."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -971,7 +971,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet()
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -1122,12 +1122,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet()
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No data found that matches the selected filters."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No data found that matches the selected filters."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -1179,8 +1179,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "The user-role assignment was deleted."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "The user-role assignment was deleted."
                             }
                         }
                     };
@@ -1245,8 +1245,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No data found that matches the selected filters."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No data found that matches the selected filters."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -1315,8 +1315,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No data found to process."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No data found to process."
                             }
                         },
                         StatusCode = HttpStatusCode.BadRequest
@@ -1348,7 +1348,7 @@ namespace SecuritySystem.Application.Services.Authorization
                                 UserId = Convert.ToInt32(item.UserId),
                                 RoleId = Convert.ToInt32(item.RoleId),
                                 RecordStatus = 1,
-                                IsInspector = item.Inspector ? 1: 0,
+                                IsInspector = item.Inspector,
                                 CreatedBy = "AUTHORIZATION",
                                 CreatedAt = now
                             });
@@ -1373,7 +1373,7 @@ namespace SecuritySystem.Application.Services.Authorization
                                 UserId = Convert.ToInt32(existingItem.UserId),
                                 RoleId = Convert.ToInt32(existingItem.RoleId),
                                 RecordStatus = newStatus ? 1 : 0,
-                                IsInspector = newInspector ? 1: 0,
+                                IsInspector = newInspector,
                                 CreatedBy = "AUTHORIZATION",
                                 CreatedAt = now
                             });
@@ -1411,8 +1411,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo = TypeMessage.information.ToString(),
-                            Descripcion = "Role processing completed."
+                            Type = TypeMessage.information.ToString(),
+                            Description = "Role processing completed."
                         }
                     }
                 };
@@ -1445,8 +1445,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No data found that matches the selected filters."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No data found that matches the selected filters."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -1527,8 +1527,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No users were found that meet the search criteria."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No users were found that meet the search criteria."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound

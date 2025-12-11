@@ -19,7 +19,7 @@ namespace SecuritySystem.Infrastructure.Validators.Core
                     responseModel.IsValid = false;
                     foreach (ValidationFailure failure in validationResult.Errors)
                     {
-                        ValidationMessages.Add(new Message() { Tipo = TypeMessage.warning.ToString(), Descripcion = failure.ErrorMessage });
+                        ValidationMessages.Add(new Message() { Type = TypeMessage.warning.ToString(), Description = failure.ErrorMessage });
                     }
                     responseModel.ValidationMessages = ValidationMessages;
                 }

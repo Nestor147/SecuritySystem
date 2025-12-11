@@ -127,12 +127,12 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 {
                     var response = new ResponseGet()
                     {
-                        Mensajes = new Message[]
+                        Messages = new Message[]
                         {
                             new Message()
                             {
-                                Tipo = TypeMessage.error.ToString(),
-                                Descripcion = "Response format type not supported"
+                                Type = TypeMessage.error.ToString(),
+                                Description = "Response format type not supported"
                             }
                         },
                     };
@@ -199,12 +199,12 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 {
                     var response = new ResponseGet()
                     {
-                        Mensajes = new Message[]
+                        Messages = new Message[]
                         {
                             new Message()
                             {
-                                Tipo = TypeMessage.error.ToString(),
-                                Descripcion = "Response format type not supported"
+                                Type = TypeMessage.error.ToString(),
+                                Description = "Response format type not supported"
                             }
                         },
                     };
@@ -255,12 +255,12 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 {
                     var response = new ResponseGet()
                     {
-                        Mensajes = new Message[]
+                        Messages = new Message[]
                         {
                             new Message()
                             {
-                                Tipo = TypeMessage.error.ToString(),
-                                Descripcion = "Response format type not supported"
+                                Type = TypeMessage.error.ToString(),
+                                Description = "Response format type not supported"
                             }
                         },
                     };

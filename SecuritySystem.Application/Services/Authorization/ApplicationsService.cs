@@ -94,8 +94,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.warning.ToString(),
-                                Descripcion = "An application with this code or name is already registered."
+                                Type = TypeMessage.warning.ToString(),
+                                Description = "An application with this code or name is already registered."
                             }
                         },
                         StatusCode = HttpStatusCode.BadRequest
@@ -166,8 +166,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo = TypeMessage.information.ToString(),
-                            Descripcion = "The application and its signing key were created successfully."
+                            Type = TypeMessage.information.ToString(),
+                            Description = "The application and its signing key were created successfully."
                         }
                     }
                 };
@@ -182,8 +182,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo = TypeMessage.error.ToString(),
-                            Descripcion = "Unexpected error while creating the application: " + ex.Message
+                            Type = TypeMessage.error.ToString(),
+                            Description = "Unexpected error while creating the application: " + ex.Message
                         }
                     }
                 };
@@ -220,8 +220,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.warning.ToString(),
-                                Descripcion = "An application with this code and name is already registered."
+                                Type = TypeMessage.warning.ToString(),
+                                Description = "An application with this code and name is already registered."
                             }
                         },
                         StatusCode = HttpStatusCode.BadRequest
@@ -260,8 +260,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "The application was updated successfully."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "The application was updated successfully."
                             }
                         }
                     };
@@ -314,8 +314,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "The application was deleted."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "The application was deleted."
                             }
                         }
                     };
@@ -379,8 +379,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo = TypeMessage.information.ToString(),
-                            Descripcion = "No application was found."
+                            Type = TypeMessage.information.ToString(),
+                            Description = "No application was found."
                         }
                     },
                     StatusCode = HttpStatusCode.NotFound
@@ -413,12 +413,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No data found for the selected filters."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No data found for the selected filters."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -601,7 +601,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                     _responseGet = new ResponseGet
                     {
-                        Datos = _comboRowModelList,
+                        Data = _comboRowModelList,
                         StatusCode = HttpStatusCode.OK
                     };
                 }
@@ -609,12 +609,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     _responseGet = new ResponseGet
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.information.ToString(),
-                                Descripcion = "No applications were found."
+                                Type = TypeMessage.information.ToString(),
+                                Description = "No applications were found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -639,12 +639,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo = TypeMessage.warning.ToString(),
-                                Descripcion = "The token parameter is required."
+                                Type = TypeMessage.warning.ToString(),
+                                Description = "The token parameter is required."
                             }
                         },
                         StatusCode = HttpStatusCode.BadRequest
@@ -682,19 +682,19 @@ namespace SecuritySystem.Application.Services.Authorization
 
                     return new ResponseGet
                     {
-                        Datos = applications,
+                        Data = applications,
                         StatusCode = HttpStatusCode.OK
                     };
                 }
 
                 return new ResponseGet
                 {
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
-                            Tipo = TypeMessage.information.ToString(),
-                            Descripcion = "No data found for the selected filters."
+                            Type = TypeMessage.information.ToString(),
+                            Description = "No data found for the selected filters."
                         }
                     },
                     StatusCode = HttpStatusCode.NotFound

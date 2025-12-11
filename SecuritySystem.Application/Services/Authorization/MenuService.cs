@@ -315,8 +315,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.warning.ToString(),
-                                Descripcion = "A menu with more than 6 levels is not allowed."
+                                Type        = TypeMessage.warning.ToString(),
+                                Description = "A menu with more than 6 levels is not allowed."
                             }
                         },
                         StatusCode = HttpStatusCode.BadRequest
@@ -484,8 +484,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo        = TypeMessage.information.ToString(),
-                            Descripcion = "The menu was saved successfully."
+                            Type        = TypeMessage.information.ToString(),
+                            Description = "The menu was saved successfully."
                         }
                     }
                 };
@@ -536,8 +536,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo        = TypeMessage.information.ToString(),
-                            Descripcion = "No menu found."
+                            Type        = TypeMessage.information.ToString(),
+                            Description = "No menu found."
                         }
                     },
                     StatusCode = HttpStatusCode.NotFound
@@ -572,8 +572,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "Menu not found."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "Menu not found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -670,8 +670,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "No menu found."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "No menu found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -772,8 +772,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.success.ToString(),
-                                Descripcion = "The page was successfully assigned to the role."
+                                Type        = TypeMessage.success.ToString(),
+                                Description = "The page was successfully assigned to the role."
                             }
                         }
                     };
@@ -786,8 +786,8 @@ namespace SecuritySystem.Application.Services.Authorization
                     {
                         new Message
                         {
-                            Tipo        = TypeMessage.success.ToString(),
-                            Descripcion = "The page was removed from the role."
+                            Type        = TypeMessage.success.ToString(),
+                            Description = "The page was removed from the role."
                         }
                     }
                 };
@@ -823,8 +823,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "No menu found."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "No menu found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -850,8 +850,8 @@ namespace SecuritySystem.Application.Services.Authorization
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "No menu found."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "No menu found."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -921,12 +921,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.information.ToString(),
-                                Descripcion = "There are no roles related to this resource."
+                                Type        = TypeMessage.information.ToString(),
+                                Description = "There are no roles related to this resource."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -943,7 +943,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 return new ResponseGet
                 {
-                    Datos = rolesResources,
+                    Data = rolesResources,
                     StatusCode = HttpStatusCode.OK
                 };
             }
@@ -964,12 +964,12 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGet
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
-                                Tipo        = TypeMessage.success.ToString(),
-                                Descripcion = "No roles are associated; the menu can be modified."
+                                Type        = TypeMessage.success.ToString(),
+                                Description = "No roles are associated; the menu can be modified."
                             }
                         },
                         StatusCode = HttpStatusCode.NotFound
@@ -988,7 +988,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 return new ResponseGet
                 {
-                    Datos = validatedMenu,
+                    Data = validatedMenu,
                     StatusCode = HttpStatusCode.OK
                 };
             }

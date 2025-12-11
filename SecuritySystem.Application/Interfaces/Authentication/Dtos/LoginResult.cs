@@ -11,9 +11,9 @@ namespace SecuritySystem.Application.Interfaces.Authentication.Dtos
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
 
-        public int ApplicationId { get; set; }
-        public string ApplicationCode { get; set; }
+        //public int ApplicationId { get; set; }
+        //public string ApplicationCode { get; set; }
 
-        public IReadOnlyList<string> Roles { get; set; }
+        //public IReadOnlyList<string> Roles { get; set; }
     }
 }

@@ -6,5 +6,6 @@ namespace SecuritySystem.Application.Interfaces.Authentication
     public interface IUserService
     {
         Task<ResponsePost> CreateUserAsync(CreateUserRequest request, CancellationToken ct);
+        Task<ResponseGet> SearchUsersAsync(string searchCriteria, CancellationToken ct);
     }
 }

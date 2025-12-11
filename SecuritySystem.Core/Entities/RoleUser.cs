@@ -7,7 +7,8 @@ namespace SecuritySystem.Core.Entities
         public int Id { get; set; }
         public int RoleId { get; set; }
         public int UserId { get; set; }
-        public int IsInspector { get; set; }
-        
+        //public int IsInspector { get; set; }
+        public bool IsInspector { get; set; }
+
     }
 }
