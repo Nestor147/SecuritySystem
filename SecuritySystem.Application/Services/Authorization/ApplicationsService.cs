@@ -75,7 +75,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponsePost
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -90,7 +90,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponsePost
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -162,7 +162,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 return new ResponsePost
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
@@ -178,7 +178,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 return new ResponsePost
                 {
                     StatusCode = HttpStatusCode.InternalServerError,
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
@@ -201,7 +201,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponsePost
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -216,7 +216,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponsePost
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -256,7 +256,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     return new ResponsePost
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -289,7 +289,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponsePost
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -310,7 +310,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     return new ResponsePost
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -343,7 +343,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetObject
                     {
-                        Mensajes = responseModel.ValidationMessages.ToArray(),
+                        Messages = responseModel.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -368,14 +368,14 @@ namespace SecuritySystem.Application.Services.Authorization
 
                     return new ResponseGetObject
                     {
-                        Datos = dto,
+                        Data = dto,
                         StatusCode = HttpStatusCode.OK
                     };
                 }
 
                 return new ResponseGetObject
                 {
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
@@ -559,14 +559,14 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetPagination
                     {
-                        Paginacion = new PaginatedList<object>(dtoListResponse, paginationData),
+                        Pagination = new PaginatedList<object>(dtoListResponse, paginationData),
                         StatusCode = HttpStatusCode.OK
                     };
                 }
 
                 return new ResponseGetObject
                 {
-                    Datos = dtoListResponse,
+                    Data = dtoListResponse,
                     StatusCode = HttpStatusCode.OK
                 };
             }

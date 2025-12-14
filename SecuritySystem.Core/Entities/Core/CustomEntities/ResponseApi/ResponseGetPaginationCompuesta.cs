@@ -6,11 +6,11 @@ namespace SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi
 {
     public class ResponseGetPaginationCompuesta
     {
-        public object Datos { get; set; }
+        public object Data { get; set; }
 
-        public Pagination Paginacion { get; set; }
+        public Pagination Pagination { get; set; }
 
-        public Message[] Mensajes { get; set; }
+        public Message[] Messages { get; set; }
         [JsonIgnore]
 
         public HttpStatusCode StatusCode { get; set; }

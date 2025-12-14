@@ -5,7 +5,7 @@ namespace SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi
 {
     public class ResponsePostRequest
     {
-        public Message[] Mensajes { get; set; }
+        public Message[] Messages { get; set; }
         public string Id { get; set; }
         //public ResponsePostDetail Respuesta { get; set; }
         [JsonIgnore]

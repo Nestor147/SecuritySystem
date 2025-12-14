@@ -33,7 +33,7 @@ namespace SecuritySystem.Application.Services.Users
                     return new ResponsePost
                     {
                         StatusCode = HttpStatusCode.BadRequest,
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -49,7 +49,7 @@ namespace SecuritySystem.Application.Services.Users
                     return new ResponsePost
                     {
                         StatusCode = HttpStatusCode.BadRequest,
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -70,7 +70,7 @@ namespace SecuritySystem.Application.Services.Users
                     return new ResponsePost
                     {
                         StatusCode = HttpStatusCode.Conflict,
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -116,7 +116,7 @@ namespace SecuritySystem.Application.Services.Users
                 return new ResponsePost
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
@@ -134,7 +134,7 @@ namespace SecuritySystem.Application.Services.Users
                 return new ResponsePost
                 {
                     StatusCode = HttpStatusCode.InternalServerError,
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {

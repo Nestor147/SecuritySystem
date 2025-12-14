@@ -267,7 +267,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponsePost
                     {
-                        Mensajes = validation.ValidationMessages.ToArray(),
+                        Messages = validation.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -311,7 +311,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponsePost
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -474,13 +474,13 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 return new ResponsePost
                 {
-                    Respuesta = new ResponsePostDetail
+                    Response = new ResponsePostDetail
                     {
                         Process = "CREATE MENU",
                         RowsAffected = affectedRows
                     },
                     StatusCode = HttpStatusCode.OK,
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
@@ -525,14 +525,14 @@ namespace SecuritySystem.Application.Services.Authorization
 
                     return new ResponseGetObject
                     {
-                        Datos = formattedMenu,
+                        Data = formattedMenu,
                         StatusCode = HttpStatusCode.OK
                     };
                 }
 
                 return new ResponseGetObject
                 {
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
@@ -558,7 +558,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetObject
                     {
-                        Mensajes = validation.ValidationMessages.ToArray(),
+                        Messages = validation.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -568,7 +568,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetObject
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -633,7 +633,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 return new ResponseGetObject
                 {
-                    Datos = finalMenu,
+                    Data = finalMenu,
                     StatusCode = HttpStatusCode.OK
                 };
             }
@@ -654,7 +654,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetObject
                     {
-                        Mensajes = validation.ValidationMessages.ToArray(),
+                        Messages = validation.ValidationMessages.ToArray(),
                         StatusCode = HttpStatusCode.BadRequest
                     };
                 }
@@ -666,7 +666,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetObject
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -717,7 +717,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 return new ResponseGetObject
                 {
-                    Datos = formattedMenu,
+                    Data = formattedMenu,
                     StatusCode = HttpStatusCode.OK
                 };
             }
@@ -768,7 +768,7 @@ namespace SecuritySystem.Application.Services.Authorization
                     return new ResponsePost
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -782,7 +782,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 return new ResponsePost
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Mensajes = new[]
+                    Messages = new[]
                     {
                         new Message
                         {
@@ -819,7 +819,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetObject
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -846,7 +846,7 @@ namespace SecuritySystem.Application.Services.Authorization
                 {
                     return new ResponseGetObject
                     {
-                        Mensajes = new[]
+                        Messages = new[]
                         {
                             new Message
                             {
@@ -901,7 +901,7 @@ namespace SecuritySystem.Application.Services.Authorization
 
                 return new ResponseGetObject
                 {
-                    Datos = finalMenu,
+                    Data = finalMenu,
                     StatusCode = HttpStatusCode.OK
                 };
             }
@@ -1005,8 +1005,8 @@ namespace SecuritySystem.Application.Services.Authorization
             var result = await GetMenuResourcesByUser(queryFilter);
             return new ResponseGetObject
             {
-                Datos = result.Datos,
-                Mensajes = result.Mensajes,
+                Data = result.Data,
+                Messages = result.Messages,
                 StatusCode = result.StatusCode
             };
         }

@@ -117,21 +117,21 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 if (nodes is ResponseGetObject)
                 {
                     var data = nodes as ResponseGetObject;
-                    var response = new ApiResponse<object>(data.Datos)
+                    var response = new ApiResponse<object>(data.Data)
                     {
-                        Mensajes = data.Mensajes
+                        Messages = data.Messages
                     };
                     return StatusCode((int)data.StatusCode, response);
                 }
                 else if (nodes is ResponseGetPagination)
                 {
                     var data = nodes as ResponseGetPagination;
-                    var pagination = new Pagination(data.Paginacion);
+                    var pagination = new Pagination(data.Pagination);
 
-                    var response = new ApiResponse<object>(data.Paginacion)
+                    var response = new ApiResponse<object>(data.Pagination)
                     {
-                        Mensajes = data.Mensajes,
-                        Paginacion = pagination,
+                        Messages = data.Messages,
+                        Pagination = pagination,
                     };
 
                     return StatusCode((int)data.StatusCode, response);
@@ -268,9 +268,9 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 if (pages is ResponseGetObject)
                 {
                     var responseDataObjectWithoutPag = pages as ResponseGetObject;
-                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Datos)
+                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Data)
                     {
-                        Mensajes = responseDataObjectWithoutPag.Mensajes
+                        Messages = responseDataObjectWithoutPag.Messages
                     };
                     return StatusCode((int)responseDataObjectWithoutPag.StatusCode, response);
                 }
@@ -278,11 +278,11 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 else if (pages is ResponseGetPagination)
                 {
                     var responseDataPagination = pages as ResponseGetPagination;
-                    var pagination = new Pagination(responseDataPagination.Paginacion);
-                    var response = new ApiResponse<object>(responseDataPagination.Paginacion)
+                    var pagination = new Pagination(responseDataPagination.Pagination);
+                    var response = new ApiResponse<object>(responseDataPagination.Pagination)
                     {
-                        Mensajes = responseDataPagination.Mensajes,
-                        Paginacion = pagination,
+                        Messages = responseDataPagination.Messages,
+                        Pagination = pagination,
                     };
                     return StatusCode((int)responseDataPagination.StatusCode, response);
                 }

@@ -106,20 +106,20 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 if (roles is ResponseGetObject)
                 {
                     var responseDataObjectWithoutPag = roles as ResponseGetObject;
-                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Datos)
+                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Data)
                     {
-                        Mensajes = responseDataObjectWithoutPag.Mensajes
+                        Messages = responseDataObjectWithoutPag.Messages
                     };
                     return StatusCode((int)responseDataObjectWithoutPag.StatusCode, response);
                 }
                 else if (roles is ResponseGetPagination)
                 {
                     var responseDataPagination = roles as ResponseGetPagination;
-                    var pagination = new Pagination(responseDataPagination.Paginacion);
-                    var response = new ApiResponse<object>(responseDataPagination.Paginacion)
+                    var pagination = new Pagination(responseDataPagination.Pagination);
+                    var response = new ApiResponse<object>(responseDataPagination.Pagination)
                     {
-                        Mensajes = responseDataPagination.Mensajes,
-                        Paginacion = pagination,
+                        Messages = responseDataPagination.Messages,
+                        Pagination = pagination,
                     };
                     return StatusCode((int)responseDataPagination.StatusCode, response);
                 }
@@ -178,20 +178,20 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 if (result is ResponseGetObject)
                 {
                     var responseDataObjectWithoutPag = result as ResponseGetObject;
-                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Datos)
+                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Data)
                     {
-                        Mensajes = responseDataObjectWithoutPag.Mensajes
+                        Messages = responseDataObjectWithoutPag.Messages
                     };
                     return StatusCode((int)responseDataObjectWithoutPag.StatusCode, response);
                 }
                 else if (result is ResponseGetPagination)
                 {
                     var responseDataPagination = result as ResponseGetPagination;
-                    var pagination = new Pagination(responseDataPagination.Paginacion);
-                    var response = new ApiResponse<object>(responseDataPagination.Paginacion)
+                    var pagination = new Pagination(responseDataPagination.Pagination);
+                    var response = new ApiResponse<object>(responseDataPagination.Pagination)
                     {
-                        Mensajes = responseDataPagination.Mensajes,
-                        Paginacion = pagination,
+                        Messages = responseDataPagination.Messages,
+                        Pagination = pagination,
                     };
                     return StatusCode((int)responseDataPagination.StatusCode, response);
                 }
@@ -234,20 +234,20 @@ namespace SecuritySystem.Web.Controllers.Authorization
                 if (result is ResponseGetObject)
                 {
                     var responseDataObjectWithoutPag = result as ResponseGetObject;
-                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Datos)
+                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Data)
                     {
-                        Mensajes = responseDataObjectWithoutPag.Mensajes
+                        Messages = responseDataObjectWithoutPag.Messages
                     };
                     return StatusCode((int)responseDataObjectWithoutPag.StatusCode, response);
                 }
                 else if (result is ResponseGetPagination)
                 {
                     var responseDataPagination = result as ResponseGetPagination;
-                    var pagination = new Pagination(responseDataPagination.Paginacion);
-                    var response = new ApiResponse<object>(responseDataPagination.Paginacion)
+                    var pagination = new Pagination(responseDataPagination.Pagination);
+                    var response = new ApiResponse<object>(responseDataPagination.Pagination)
                     {
-                        Mensajes = responseDataPagination.Mensajes,
-                        Paginacion = pagination,
+                        Messages = responseDataPagination.Messages,
+                        Pagination = pagination,
                     };
                     return StatusCode((int)responseDataPagination.StatusCode, response);
                 }

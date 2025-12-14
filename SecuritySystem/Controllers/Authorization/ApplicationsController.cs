@@ -110,20 +110,20 @@ namespace SecuritySystem.Controllers.Authorization
                 if (applications is ResponseGetObject)
                 {
                     var responseDataObjectWithoutPag = applications as ResponseGetObject;
-                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Datos)
+                    var response = new ApiResponse<object>(responseDataObjectWithoutPag.Data)
                     {
-                        Mensajes = responseDataObjectWithoutPag.Mensajes
+                        Messages = responseDataObjectWithoutPag.Messages
                     };
                     return StatusCode((int)responseDataObjectWithoutPag.StatusCode, response);
                 }
                 else if (applications is ResponseGetPagination)
                 {
                     var responseDataPagination = applications as ResponseGetPagination;
-                    var pagination = new Pagination(responseDataPagination.Paginacion);
-                    var response = new ApiResponse<object>(responseDataPagination.Paginacion)
+                    var pagination = new Pagination(responseDataPagination.Pagination);
+                    var response = new ApiResponse<object>(responseDataPagination.Pagination)
                     {
-                        Mensajes = responseDataPagination.Mensajes,
-                        Paginacion = pagination,
+                        Messages = responseDataPagination.Messages,
+                        Pagination = pagination,
                     };
                     return StatusCode((int)responseDataPagination.StatusCode, response);
                 }

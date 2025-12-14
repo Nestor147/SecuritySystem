@@ -5,8 +5,8 @@ namespace SecuritySystem.Core.Entities.core.CustomEntities.ResponseApi
 {
     public class ResponseGetObject
     {
-        public object Datos { get; set; }
-        public Message[] Mensajes { get; set; }
+        public object Data { get; set; }
+        public Message[] Messages { get; set; }
         [JsonIgnore]
         public HttpStatusCode StatusCode { get; set; }
     }
