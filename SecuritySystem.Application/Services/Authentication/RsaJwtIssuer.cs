@@ -16,6 +16,7 @@ namespace SecuritySystem.Application.Services.Authentication
     {
         public string CreateAccessToken(TokenDescriptor d, AppKeyMaterial key)
         {
+            // Validaciones iniciales
             if (d is null) throw new ArgumentNullException(nameof(d));
             if (string.IsNullOrWhiteSpace(d.Subject)) throw new ArgumentException("Subject is required.", nameof(d.Subject));
             if (string.IsNullOrWhiteSpace(d.Issuer)) throw new ArgumentException("Issuer is required.", nameof(d.Issuer));
@@ -23,33 +24,39 @@ namespace SecuritySystem.Application.Services.Authentication
             if (string.IsNullOrWhiteSpace(d.Jti)) throw new ArgumentException("Jti is required.", nameof(d.Jti));
             if (d.Lifetime <= TimeSpan.Zero) throw new ArgumentException("Lifetime must be positive.", nameof(d.Lifetime));
 
-            using var rsa = RSA.Create();
-            rsa.ImportFromPem(key.PrivateKeyPem.AsSpan());
+            // Validación del key (ya debería tener RsaKey preprocesada)
+            if (key is null) throw new InvalidOperationException("Signing key material is null.");
+            if (key.RsaKey == null) throw new InvalidOperationException("RSA signing key is not available.");
+            if (string.IsNullOrWhiteSpace(key.Kid)) throw new InvalidOperationException("Signing key KID is missing.");
 
-            var rsaKey = new RsaSecurityKey(rsa) { KeyId = key.Kid };
-            var creds = new SigningCredentials(rsaKey, SecurityAlgorithms.RsaSha256);
+            // Credenciales de firma (usando la clave RSA cargada)
+            var creds = new SigningCredentials(key.RsaKey, SecurityAlgorithms.RsaSha256);
 
             var now = DateTime.UtcNow;
-            var iat = ToUnix(now);
+            var iat = ToUnix(now); // Fecha de creación (issued at)
 
+            // Creación de claims para el token
             var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, d.Subject),
-            new(JwtRegisteredClaimNames.Jti, d.Jti),
-            new(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64),
-            new("app_id", key.ApplicationId.ToString())
-        };
+    {
+        new(JwtRegisteredClaimNames.Sub, d.Subject),        // Subject (usuario)
+        new(JwtRegisteredClaimNames.Jti, d.Jti),            // JTI (JWT ID)
+        new(JwtRegisteredClaimNames.Iat, iat.ToString(), ClaimValueTypes.Integer64), // Timestamp de emisión
+        new("app_id", key.ApplicationId.ToString())         // ID de la aplicación
+    };
 
-            if (d.Roles is not null)
+            // Roles (si están definidos)
+            if (d.Roles != null)
             {
                 foreach (var r in d.Roles.Where(r => !string.IsNullOrWhiteSpace(r)).Distinct())
                     claims.Add(new Claim(ClaimTypes.Role, r));
             }
 
-            if (d.ExtraClaims is not null)
+            // Claims adicionales definidos por el usuario
+            if (d.ExtraClaims != null)
                 claims.AddRange(d.ExtraClaims);
 
-            if (d.Claims is not null)
+            // Claims personalizados
+            if (d.Claims != null)
             {
                 foreach (var kv in d.Claims)
                 {
@@ -60,20 +67,24 @@ namespace SecuritySystem.Application.Services.Authentication
                 }
             }
 
+            // Creación del token con los claims y la firma
             var token = new JwtSecurityToken(
                 issuer: d.Issuer,
                 audience: d.Audience,
                 claims: claims,
-                notBefore: now,
-                expires: now.Add(d.Lifetime),
-                signingCredentials: creds
+                notBefore: now,                             // No válido antes de la emisión
+                expires: now.Add(d.Lifetime),              // Expiración del token
+                signingCredentials: creds                  // Credenciales de firma RSA
             );
 
+            // Agregar "kid" en el header
             token.Header["kid"] = key.Kid;
 
+            // Retornar el token como string
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         private static long ToUnix(DateTime dt) => new DateTimeOffset(dt).ToUnixTimeSeconds();
+
     }
 }
