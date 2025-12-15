@@ -11,5 +11,9 @@ namespace SecuritySystem.Core.QueryFilters.Custom
         public string CreatedBy { get; set; } = "SECURITY_SYSTEM";
         public int RecordStatus { get; set; } = 1;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+
+
+
     }
 }
